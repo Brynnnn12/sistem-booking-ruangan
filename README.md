@@ -123,16 +123,17 @@ created_at, updated_at
 
 Dalam proyek ini, kita menggunakan **Scrum** dengan elemen-elemen berikut:
 
-- **Sprint**: Periode waktu tetap (2 minggu) untuk menyelesaikan tugas tertentu.
-- **User Stories**: Deskripsi fitur dari perspektif pengguna (format: "As a [role], I want [feature] so that [benefit]").
-- **Acceptance Criteria**: Kriteria yang harus dipenuhi agar story dianggap selesai.
-- **Definition of Done (DoD)**: Standar untuk menyatakan sprint selesai.
-- **Retrospective**: Refleksi di akhir sprint untuk perbaikan.
+-   **Sprint**: Periode waktu tetap (2 minggu) untuk menyelesaikan tugas tertentu.
+-   **User Stories**: Deskripsi fitur dari perspektif pengguna (format: "As a [role], I want [feature] so that [benefit]").
+-   **Acceptance Criteria**: Kriteria yang harus dipenuhi agar story dianggap selesai.
+-   **Definition of Done (DoD)**: Standar untuk menyatakan sprint selesai.
+-   **Retrospective**: Refleksi di akhir sprint untuk perbaikan.
 
 **Mengapa Agile untuk Proyek Ini?**
-- Proyek kecil (1 developer), cocok untuk iterasi cepat.
-- Memungkinkan feedback dini dan penyesuaian.
-- Fokus pada value delivery, bukan dokumentasi berlebihan.
+
+-   Proyek kecil (1 developer), cocok untuk iterasi cepat.
+-   Memungkinkan feedback dini dan penyesuaian.
+-   Fokus pada value delivery, bukan dokumentasi berlebihan.
 
 ### Alur Proyek Secara Keseluruhan
 
@@ -533,37 +534,44 @@ public function test_booking_conflict_detection()
 ### Alur Proyek Detail (Week by Week)
 
 **Week 1: Planning & Sprint 1 Start**
-- Analisis kebutuhan bisnis
-- Setup environment (Laravel, DB, Git)
-- Mulai Sprint 1: Auth & Roles
+
+-   Analisis kebutuhan bisnis
+-   Setup environment (Laravel, DB, Git)
+-   Mulai Sprint 1: Auth & Roles
 
 **Week 2: Sprint 1 End & Review**
-- Selesai Room CRUD & Listing
-- Sprint Review: Demo features
-- Retrospective: Apa yang baik, apa yang perlu diperbaiki
+
+-   Selesai Room CRUD & Listing
+-   Sprint Review: Demo features
+-   Retrospective: Apa yang baik, apa yang perlu diperbaiki
 
 **Week 3: Sprint 2 Start**
-- Planning Sprint 2
-- Implementasi Booking Creation & Validation
+
+-   Planning Sprint 2
+-   Implementasi Booking Creation & Validation
 
 **Week 4: Sprint 2 End & Review**
-- Conflict Checking, My Bookings, Cancel Policies
-- Testing edge cases
-- Sprint Review & Retrospective
+
+-   Conflict Checking, My Bookings, Cancel Policies
+-   Testing edge cases
+-   Sprint Review & Retrospective
 
 **Week 5: Sprint 3 Start**
-- Planning Sprint 3
-- Admin & Staff Dashboards
+
+-   Planning Sprint 3
+-   Admin & Staff Dashboards
 
 **Week 6: Sprint 3 End & Review**
-- UI Polish, Documentation
-- Final testing
-- Sprint Review & Retrospective
+
+-   UI Polish, Documentation
+-   Final testing
+-   Sprint Review & Retrospective
 
 **Week 7: Buffer & Deployment**
-- Bug fixes jika ada
-- Deploy to staging/production
-- Final demo & documentation
+
+-   Bug fixes jika ada
+-   Deploy to staging/production
+-   Final demo & documentation
 
 ### Diagram Timeline
 
