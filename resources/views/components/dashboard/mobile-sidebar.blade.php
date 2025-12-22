@@ -12,21 +12,22 @@
                     </div>
 
                     <nav>
-                        <a href="{{ route('dashboard') }}"
-                            class="flex items-center p-3 rounded-lg mb-2 transition-all hover:bg-blue-700 {{ request()->routeIs('dashboard') ? 'bg-blue-700' : '' }}"
+                        <a href="{{ route('dashboard.index') }}"
+                            class="flex items-center p-3 rounded-lg mb-2 transition-all hover:bg-blue-700 {{ request()->routeIs('dashboard.index') ? 'bg-blue-700' : '' }}"
                             @click="isSidebarOpen = false">
                             <i class="fas fa-home mr-3"></i>
                             <span>Overview</span>
                         </a>
 
-                        <a href="#"
-                            class="flex items-center p-3 rounded-lg mb-2 transition-all hover:bg-blue-700 {{ request()->routeIs('todos.*') ? 'bg-blue-700' : '' }}"
+                        <a href="{{ route('dashboard.rooms.index') }}"
+                            class="flex items-center p-3 rounded-lg mb-2 transition-all hover:bg-blue-700 {{ request()->routeIs('dashboard.rooms.*') ? 'bg-blue-700' : '' }}"
                             @click="isSidebarOpen = false">
-                            <i class="fas fa-list mr-3"></i>
-                            <span>Todos</span>
+                            <i class="fas fa-building mr-3"></i>
+                            <span>Rooms</span>
                         </a>
-                        <a href="{{ route('profile.edit') }}"
-                            class="flex items-center p-3 rounded-lg mb-2 transition-all hover:bg-blue-700 {{ request()->routeIs('profile.*') ? 'bg-blue-700' : '' }}"
+
+                        <a href="{{ route('dashboard.profile.edit') }}"
+                            class="flex items-center p-3 rounded-lg mb-2 transition-all hover:bg-blue-700 {{ request()->routeIs('dashboard.profile.*') ? 'bg-blue-700' : '' }}"
                             @click="isSidebarOpen = false">
                             <i class="fas fa-user mr-3"></i>
                             <span>Profile</span>

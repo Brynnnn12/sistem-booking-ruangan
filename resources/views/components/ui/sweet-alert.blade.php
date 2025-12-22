@@ -2,11 +2,13 @@
     'type' => 'info',
     'title' => '',
     'text' => '',
+    'html' => false,
     'confirmButton' => 'OK',
     'showOnLoad' => false,
     'timer' => null,
     'position' => 'center',
     'toast' => false,
+    'width' => null,
 ])
 
 @php
@@ -21,22 +23,30 @@
 @if ($showOnLoad)
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            Swal.fire({
-                icon: '{{ $config['icon'] }}',
-                title: '{{ $title }}',
-                text: `{!! $text !!}`,
-                toast: {{ $toast ? 'true' : 'false' }},
-                position: '{{ $toast && $position === 'center' ? 'top-end' : $position }}',
-                timer: {{ $timer ?? 'null' }},
-                timerProgressBar: {{ $timer ? 'true' : 'false' }},
-                showConfirmButton: {{ $timer ? 'false' : 'true' }},
-                confirmButtonColor: '{{ $config['color'] }}',
-                confirmButtonText: '{{ $confirmButton }}',
+            const options = {
+                icon: @js($config['icon']),
+                title: @js($title),
+                toast: @js((bool) $toast),
+                position: @js($toast && $position === 'center' ? 'top-end' : $position),
+                timer: @js($timer),
+                timerProgressBar: @js((bool) $timer),
+                showConfirmButton: @js(!$timer),
+                confirmButtonColor: @js($config['color']),
+                confirmButtonText: @js($confirmButton),
+                width: @js($width),
                 didOpen: (toast) => {
                     toast.addEventListener('mouseenter', Swal.stopTimer)
                     toast.addEventListener('mouseleave', Swal.resumeTimer)
-                }
-            });
+                },
+            };
+
+            if (@js((bool) $html)) {
+                options.html = @js($text);
+            } else {
+                options.text = @js($text);
+            }
+
+            Swal.fire(options);
         });
     </script>
 @endif

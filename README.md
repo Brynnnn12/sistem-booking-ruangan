@@ -252,12 +252,57 @@ Estimate: 3 hours
 
 ### Definition of Done (Sprint 1)
 
--   [ ] Code di push ke GitHub
--   [ ] Migration & seeder berjalan tanpa error
--   [ ] Manual testing passed untuk semua user stories
--   [ ] README updated dengan setup instruction
+-   [x] Code di push ke GitHub
+-   [x] Migration & seeder berjalan tanpa error
+-   [x] Manual testing passed untuk semua user stories
+-   [x] README updated dengan setup instruction
 
 ---
+
+## ✅ SPRINT 1 COMPLETED: Foundation & Authentication
+
+**Status**: ✅ **SELESAI** (Rooms CRUD & Testing)
+
+### Yang Sudah Diimplementasi
+
+**US-1.1: Setup Project** ✅
+
+-   Laravel 11 installed dengan PHP 8.2+
+-   Laravel Breeze installed & configured
+-   Database MySQL configured
+-   Git repository initialized
+
+**US-1.2: User Management & Roles** ✅
+
+-   Spatie Permission installed & configured
+-   Role 'Admin' dan 'Staff' seeded
+-   Middleware role-based access control
+-   MustVerifyEmail trait activated untuk email verification
+
+**US-1.3: Room Master Data** ✅
+
+-   Migration table `rooms` (name, location, capacity, is_active)
+-   CRUD controller & views (admin only via policy)
+-   Validation: name/location required, capacity min 1
+-   Seeder dengan contoh ruang
+-   Policy RoomPolicy untuk role-based access
+
+**US-1.4: Room List for Staff** ✅
+
+-   Route `/dashboard/rooms` untuk list rooms
+-   Filter by capacity (optional)
+-   View dengan Blade + Tailwind CSS
+-   Role-based access: Admin CRUD, Staff view only
+
+### Testing Coverage ✅
+
+-   Feature tests untuk RoomTest.php (9 test cases)
+-   Coverage: Guest access, Email verification, Admin/Staff permissions
+-   Conflict checking logic ready untuk Sprint 2
+
+### Next: Sprint 2 - Booking Core Logic
+
+Siap untuk implementasi booking dengan conflict checking.
 
 ## 🏃 SPRINT 2: Booking Core Logic (Week 3-4)
 
@@ -762,121 +807,44 @@ Gunakan setelah setiap sprint:
 
 ---
 
-## 📖 Penjelasan Lengkap dan Detail Laravel 12
+## � RESOURCES
 
-**Catatan Penting**: Pada saat penulisan ini (Desember 2025), Laravel 12 belum secara resmi dirilis oleh Taylor Otwell dan tim Laravel. Laravel versi terbaru yang stabil adalah Laravel 11.x, yang dirilis pada Maret 2024. Penjelasan di bawah ini didasarkan pada tren pengembangan Laravel, fitur-fitur yang telah diumumkan atau diperkirakan untuk versi mendatang, serta spekulasi berdasarkan roadmap Laravel dan komunitas. Jika Laravel 12 telah dirilis, silakan periksa dokumentasi resmi di [laravel.com](https://laravel.com).
+### Laravel Documentation
 
-Laravel adalah framework PHP paling populer untuk membangun aplikasi web modern. Versi 12 diharapkan akan melanjutkan tradisi Laravel dalam menyediakan alat-alat yang powerful, elegan, dan developer-friendly. Berikut adalah penjelasan lengkap dan detail tentang apa yang mungkin ada di Laravel 12, dengan fokus pada fitur-fitur yang relevan untuk proyek Sistem Booking Ruangan ini.
+-   [Eloquent Relationships](https://laravel.com/docs/11.x/eloquent-relationships)
+-   [Authorization](https://laravel.com/docs/11.x/authorization)
+-   [Validation](https://laravel.com/docs/11.x/validation)
 
-### 🎯 Filosofi dan Evolusi Laravel
+### Packages
 
-Laravel didasarkan pada prinsip "Convention over Configuration" (CoC), yang berarti framework menyediakan konvensi default yang masuk akal, sehingga developer dapat fokus pada logika bisnis daripada konfigurasi boilerplate. Laravel 12 diperkirakan akan memperkuat ini dengan:
+-   [Spatie Laravel Permission](https://spatie.be/docs/laravel-permission/v6/introduction)
+-   [Laravel Breeze](https://laravel.com/docs/11.x/starter-kits#breeze)
 
--   **Improved Developer Experience (DX)**: Lebih banyak fitur untuk meningkatkan produktivitas, seperti auto-completion yang lebih baik, error messages yang lebih jelas, dan tooling yang terintegrasi.
--   **Performance Enhancements**: Optimasi internal untuk aplikasi yang lebih cepat, termasuk caching yang lebih efisien dan lazy loading yang lebih cerdas.
--   **Security First**: Fitur keamanan tambahan, seperti CSRF protection yang lebih robust dan encryption yang lebih aman.
+### Best Practices
 
-### 🛠️ Fitur Utama yang Diharapkan di Laravel 12
-
-Berdasarkan tren dari Laravel 9 hingga 11, berikut adalah fitur-fitur yang mungkin hadir di Laravel 12:
-
-#### 1. **Eloquent ORM Enhancements**
-
--   **Advanced Relationships**: Dukungan untuk relationship yang lebih kompleks, seperti polymorphic many-to-many dengan eager loading otomatis.
--   **Query Builder Improvements**: Syntax yang lebih fluent untuk query kompleks, termasuk support untuk CTE (Common Table Expressions) dan window functions.
--   **Model Casting**: Casting otomatis untuk tipe data kustom, seperti UUID atau encrypted fields.
--   **Relevansi untuk Proyek**: Untuk sistem booking, ini akan memudahkan query conflict checking dengan relationship antara `users`, `rooms`, dan `bookings`.
-
-#### 2. **Routing & Middleware**
-
--   **Route Model Binding Enhancements**: Binding otomatis berdasarkan UUID atau slug, bukan hanya ID.
--   **Middleware Groups**: Grouping middleware yang lebih fleksibel untuk role-based access.
--   **API Resource Routes**: Lebih banyak helper untuk building RESTful APIs.
--   **Relevansi**: Dalam proyek ini, routing untuk admin dan staff dapat lebih secure dengan middleware yang diperbaiki.
-
-#### 3. **Authentication & Authorization**
-
--   **Laravel Sanctum Improvements**: Untuk API authentication, dengan support untuk token refresh yang lebih aman.
--   **Policy Classes**: Enhancements untuk policy-based authorization, termasuk caching policies.
--   **Multi-Guard Support**: Lebih mudah mengelola multiple authentication guards.
--   **Relevansi**: Menggunakan Spatie Permission, Laravel 12 akan memberikan integrasi yang lebih mulus untuk role-based access control.
-
-#### 4. **Database & Migrations**
-
--   **Schema Builder Enhancements**: Support untuk database features seperti generated columns dan foreign key constraints yang lebih advanced.
--   **Migration Rollbacks**: Rollback yang lebih granular, termasuk partial rollbacks.
--   **Database Seeding**: Seeder yang lebih powerful dengan faker integration yang lebih baik.
--   **Relevansi**: Untuk tabel `rooms`, `bookings`, dan `users`, migrations akan lebih reliable.
-
-#### 5. **Frontend Integration**
-
--   **Vite Integration**: Lebih baik lagi untuk asset compilation, dengan hot reload yang lebih cepat.
--   **Blade Components**: Components yang lebih reusable, dengan support untuk slots dan attributes.
--   **Inertia.js Support**: Jika menggunakan, integrasi yang lebih seamless untuk SPA-like experience.
--   **Relevansi**: Untuk UI sederhana dengan Blade dan Tailwind, ini akan membuat development lebih cepat.
-
-#### 6. **Testing & Quality Assurance**
-
--   **Pest Integration**: Pest sebagai default testing framework, dengan lebih banyak assertions.
--   **Parallel Testing**: Testing yang lebih cepat dengan parallel execution.
--   **Code Coverage**: Built-in code coverage reporting.
--   **Relevansi**: Untuk testing conflict logic dan policies, ini akan sangat membantu.
-
-#### 7. **Performance & Caching**
-
--   **Octane Improvements**: Jika menggunakan Laravel Octane, support untuk Swoole/RoadRunner yang lebih baik.
--   **Cache Tags**: Tagging cache untuk invalidation yang lebih efisien.
--   **Lazy Loading**: Eager loading yang lebih intelligent untuk menghindari N+1 queries.
--   **Relevansi**: Untuk aplikasi booking yang mungkin memiliki traffic tinggi, performance adalah kunci.
-
-#### 8. **Security Enhancements**
-
--   **Encrypted Cookies**: Cookies yang dienkripsi secara default.
--   **Rate Limiting**: Rate limiting yang lebih granular per route.
--   **Vulnerability Patches**: Patches untuk CVE yang diketahui.
--   **Relevansi**: Penting untuk sistem internal kantor.
-
-#### 9. **Artisan Commands & Tooling**
-
--   **New Commands**: Commands untuk scaffolding yang lebih advanced, seperti `php artisan make:module`.
--   **Task Scheduling**: Scheduling yang lebih fleksibel dengan cron-like syntax.
--   **Relevansi**: Untuk setup dan maintenance.
-
-#### 10. **Community & Ecosystem**
-
--   **Package Ecosystem**: Lebih banyak official packages dari Laravel team.
--   **Laravel Nova**: Admin panel yang lebih powerful (meskipun paid).
--   **Relevansi**: Untuk admin dashboard.
-
-### 🚀 Migrasi dari Laravel 10/11 ke 12
-
-Jika proyek ini menggunakan Laravel 10 atau 11, migrasi ke 12 (jika dirilis) akan melibatkan:
-
-1. **Update Composer Dependencies**: `composer update laravel/framework`
-2. **Check Breaking Changes**: Laravel biasanya backward compatible, tapi periksa upgrade guide.
-3. **Test Thoroughly**: Jalankan semua tests dan manual testing.
-4. **Update Packages**: Pastikan Spatie Permission dan Breeze kompatibel.
-
-### 📚 Resources untuk Belajar Laravel 12
-
--   **Official Documentation**: [laravel.com/docs](https://laravel.com/docs) (untuk versi terbaru).
--   **Laravel News**: [laravel-news.com](https://laravel-news.com) untuk updates.
--   **Laracasts**: Video tutorials oleh Jeffrey Way.
--   **GitHub**: [github.com/laravel/laravel](https://github.com/laravel/laravel) untuk source code.
-
-### 💡 Mengapa Laravel Cocok untuk Proyek Ini?
-
-Laravel sangat cocok untuk sistem booking ruangan karena:
-
--   **Rapid Development**: Dengan Eloquent dan Blade, development cepat.
--   **Security**: Built-in protections.
--   **Scalability**: Dapat handle growth dari startup ke enterprise.
--   **Community**: Banyak packages dan support.
-
-Jika Laravel 12 telah dirilis, pastikan untuk menggunakan versi LTS jika tersedia untuk stability.
+-   [Laravel Best Practices](https://github.com/alexeymezenin/laravel-best-practices)
+-   [Database Design for Booking Systems](https://stackoverflow.com/questions/tagged/booking-system)
 
 ---
 
-**Good luck with your project! 🚀**
+## ✅ SPRINT RETROSPECTIVE TEMPLATE
 
-_Questions atau butuh clarification? Document ini bisa dijadikan reference._
+Gunakan setelah setiap sprint:
+
+### What Went Well?
+
+-   [x] Features completed on time
+-   [x] No major blockers
+-   [x] Testing coverage baik (9/9 tests pass)
+
+### What Needs Improvement?
+
+-   [ ] Time estimation accuracy
+-   [ ] Testing coverage
+
+### Action Items
+
+-   [ ] Add unit tests (next sprint)
+-   [ ] Improve documentation
+
+---

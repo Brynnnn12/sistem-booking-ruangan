@@ -26,7 +26,8 @@ class RoleSeeder extends Seeder
         $adminRole = User::create([
             'name' => 'Malik',
             'email' => 'hr@gmail.com',
-            'password' => bcrypt('password')
+            'password' => bcrypt('password'),
+            'email_verified_at' => now(),
         ]);
 
         //memberi role admin ke akun admin
