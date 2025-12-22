@@ -22,24 +22,40 @@ class Room extends Model
     ];
 
     /* =====================
+     | Relationships
+     ===================== */
+
+    public function bookings()
+    {
+        return $this->hasMany(Booking::class);
+    }
+
+    /* =====================
      | Query Scopes
      ===================== */
 
-    public function scopeSearch($query, ?string $search)
+    public function scopeSearch(Builder $query, ?string $search): Builder
     {
         return $query->when(
             filled($search),
-            fn($q) =>
-            $q->where('name', 'like', "%{$search}%")
-                ->orWhere('location', 'like', "%{$search}%")
+            fn(Builder $q) =>
+            $q->where(function (Builder $sub) use ($search) {
+                $sub->where('name', 'like', "%{$search}%")
+                    ->orWhere('location', 'like', "%{$search}%");
+            })
         );
     }
 
-    public function scopeActiveStatus($query, $status)
+    public function scopeActiveStatus(Builder $query, ?bool $status): Builder
     {
         return $query->when(
-            isset($status),
-            fn($q) => $q->where('is_active', $status)
+            !is_null($status),
+            fn(Builder $q) => $q->where('is_active', $status)
         );
+    }
+
+    public function scopeActive(Builder $query): Builder
+    {
+        return $query->where('is_active', true);
     }
 }

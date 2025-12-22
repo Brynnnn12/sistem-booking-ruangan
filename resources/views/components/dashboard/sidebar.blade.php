@@ -18,6 +18,22 @@
             <span>Rooms</span>
         </a>
 
+        @hasrole('Admin')
+            <a href="{{ route('dashboard.bookings.index') }}"
+                class="flex items-center p-3 rounded-lg mb-2 transition-all hover:bg-blue-700 {{ request()->routeIs('dashboard.bookings.*') ? 'bg-blue-700' : '' }}">
+                <i class="fas fa-calendar mr-3"></i>
+                <span>All Bookings</span>
+            </a>
+        @endhasrole
+
+        @hasrole('Staff')
+            <a href="{{ route('dashboard.bookings.index') }}"
+                class="flex items-center p-3 rounded-lg mb-2 transition-all hover:bg-blue-700 {{ request()->routeIs('dashboard.bookings.*') ? 'bg-blue-700' : '' }}">
+                <i class="fas fa-calendar mr-3"></i>
+                <span>My Bookings</span>
+            </a>
+        @endhasrole
+
         <a href="{{ route('dashboard.profile.edit') }}"
             class="flex items-center p-3 rounded-lg mb-2 transition-all hover:bg-blue-700 {{ request()->routeIs('dashboard.profile.*') ? 'bg-blue-700' : '' }}">
             <i class="fas fa-user mr-3"></i>
