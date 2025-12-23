@@ -11,28 +11,29 @@
             <i class="fas fa-home mr-3"></i>
             <span>Overview</span>
         </a>
+        @role('Admin')
+            <a href="{{ route('dashboard.rooms.index') }}"
+                class="flex items-center p-3 rounded-lg mb-2 transition-all hover:bg-blue-700 {{ request()->routeIs('dashboard.rooms.*') ? 'bg-blue-700' : '' }}">
+                <i class="fas fa-building mr-3"></i>
+                <span>Rooms</span>
+            </a>
+        @endrole
 
-        <a href="{{ route('dashboard.rooms.index') }}"
-            class="flex items-center p-3 rounded-lg mb-2 transition-all hover:bg-blue-700 {{ request()->routeIs('dashboard.rooms.*') ? 'bg-blue-700' : '' }}">
-            <i class="fas fa-building mr-3"></i>
-            <span>Rooms</span>
-        </a>
-
-        @hasrole('Admin')
+        @role('Admin')
             <a href="{{ route('dashboard.bookings.index') }}"
                 class="flex items-center p-3 rounded-lg mb-2 transition-all hover:bg-blue-700 {{ request()->routeIs('dashboard.bookings.*') ? 'bg-blue-700' : '' }}">
                 <i class="fas fa-calendar mr-3"></i>
                 <span>All Bookings</span>
             </a>
-        @endhasrole
+        @endrole
 
-        @hasrole('Staff')
+        @role('Staff')
             <a href="{{ route('dashboard.bookings.index') }}"
                 class="flex items-center p-3 rounded-lg mb-2 transition-all hover:bg-blue-700 {{ request()->routeIs('dashboard.bookings.*') ? 'bg-blue-700' : '' }}">
                 <i class="fas fa-calendar mr-3"></i>
                 <span>My Bookings</span>
             </a>
-        @endhasrole
+        @endrole
 
         <a href="{{ route('dashboard.profile.edit') }}"
             class="flex items-center p-3 rounded-lg mb-2 transition-all hover:bg-blue-700 {{ request()->routeIs('dashboard.profile.*') ? 'bg-blue-700' : '' }}">

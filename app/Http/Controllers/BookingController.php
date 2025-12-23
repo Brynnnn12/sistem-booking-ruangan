@@ -57,6 +57,22 @@ class BookingController extends Controller
             ->with('success', 'Booking berhasil dibuat.');
     }
 
+    public function show(Booking $booking)
+    {
+        $this->authorize('view', $booking);
+
+        return view('dashboard.booking.show', compact('booking'));
+    }
+
+    public function edit(Booking $booking)
+    {
+        $this->authorize('update', $booking);
+
+        $rooms = $this->roomRepository->getActive();
+
+        return view('dashboard.booking.edit', compact('booking', 'rooms'));
+    }
+
     public function update(UpdateBookingRequest $request, Booking $booking)
     {
         $this->authorize('update', $booking);

@@ -46,6 +46,8 @@
             display: none !important;
         }
     </style>
+
+    @stack('scripts')
 </body>
 
 </html>

@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RoomController;
 use App\Http\Controllers\BookingController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
 
 Route::view('/', 'welcome')->name('home');
@@ -12,7 +13,7 @@ Route::middleware(['auth', 'verified'])
     ->as('dashboard.')
     ->group(function () {
 
-        Route::view('/', 'dashboard')->name('index');
+        Route::get('/', [DashboardController::class, 'index'])->name('index');
 
         Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
         Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');

@@ -30,14 +30,19 @@
                                 </div>
 
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700">Waktu Mulai</label>
+                                    <label class="block text-sm font-medium text-gray-700">Tanggal Booking</label>
                                     <p class="mt-1 text-sm text-gray-900">
-                                        {{ $booking->start_time->format('d M Y, H:i') }}</p>
+                                        <i class="fas fa-calendar mr-1 text-blue-600"></i>
+                                        {{ $booking->booking_date->format('d M Y') }}
+                                    </p>
                                 </div>
 
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700">Waktu Selesai</label>
-                                    <p class="mt-1 text-sm text-gray-900">{{ $booking->end_time->format('d M Y, H:i') }}
+                                    <label class="block text-sm font-medium text-gray-700">Waktu</label>
+                                    <p class="mt-1 text-sm text-gray-900">
+                                        <i class="fas fa-clock mr-1 text-blue-600"></i>
+                                        {{ substr($booking->start_time, 0, 5) }} -
+                                        {{ substr($booking->end_time, 0, 5) }}
                                     </p>
                                 </div>
 

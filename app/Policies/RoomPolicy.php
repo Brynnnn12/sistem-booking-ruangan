@@ -13,7 +13,7 @@ class RoomPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->hasRole(['Admin', 'Staff']);
+        return $user->hasRole('Admin');
     }
 
     /**
@@ -21,7 +21,7 @@ class RoomPolicy
      */
     public function view(User $user, Room $room): bool
     {
-        return $user->hasRole(['Admin', 'Staff']);
+        return $user->hasRole('Admin');
     }
 
     /**

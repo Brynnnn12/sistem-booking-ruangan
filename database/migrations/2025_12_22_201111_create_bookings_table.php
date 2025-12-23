@@ -27,8 +27,9 @@ return new class extends Migration
                 ->constrained('users')
                 ->nullOnDelete();
 
-            $table->dateTime('start_time');
-            $table->dateTime('end_time');
+            $table->date('booking_date');
+            $table->time('start_time');
+            $table->time('end_time');
 
             $table->enum('status', [
                 'pending',
@@ -42,7 +43,7 @@ return new class extends Migration
             $table->timestamps();
 
             // index penting buat cek bentrok
-            $table->index(['room_id', 'start_time', 'end_time']);
+            $table->index(['room_id', 'booking_date', 'start_time', 'end_time']);
         });
     }
 

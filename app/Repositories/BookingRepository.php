@@ -17,6 +17,7 @@ class BookingRepository
             ->status($filters['status'] ?? null)
             ->forUser($filters['user_id'] ?? null)
             ->forRoom($filters['room_id'] ?? null)
+            ->orderByDesc('booking_date')
             ->orderByDesc('start_time')
             ->paginate($perPage);
     }
@@ -59,10 +60,11 @@ class BookingRepository
         ]);
     }
 
-    public function hasOverlap(int $roomId, string $startTime, string $endTime, ?int $excludeId = null): bool
+    public function hasOverlap(int $roomId, string $bookingDate, string $startTime, string $endTime, ?int $excludeId = null): bool
     {
         $query = Booking::query()
             ->where('room_id', $roomId)
+            ->where('booking_date', $bookingDate)
             ->where('status', Booking::STATUS_APPROVED)
             ->where(function ($q) use ($startTime, $endTime) {
                 $q->whereBetween('start_time', [$startTime, $endTime])
@@ -78,5 +80,19 @@ class BookingRepository
         }
 
         return $query->exists();
+    }
+
+    public function getUserBookingCountForDate(int $userId, string $date, ?int $excludeId = null): int
+    {
+        $query = Booking::query()
+            ->where('user_id', $userId)
+            ->where('booking_date', $date)
+            ->whereIn('status', [Booking::STATUS_PENDING, Booking::STATUS_APPROVED]);
+
+        if ($excludeId) {
+            $query->where('id', '!=', $excludeId);
+        }
+
+        return $query->count();
     }
 }

@@ -18,11 +18,14 @@ class BookingFactory extends Factory
      */
     public function definition(): array
     {
+        $bookingDate = $this->faker->dateTimeBetween('+1 days', '+30 days');
+
         return [
             'room_id' => Room::factory(),
             'user_id' => User::factory(),
-            'start_time' => $this->faker->dateTimeBetween('+1 days', '+10 days'),
-            'end_time' => $this->faker->dateTimeBetween('+11 days', '+20 days'),
+            'booking_date' => $bookingDate->format('Y-m-d'),
+            'start_time' => $this->faker->time('H:i', '17:00'),
+            'end_time' => $this->faker->time('H:i', '18:00'),
             'status' => $this->faker->randomElement(['pending', 'approved', 'rejected', 'cancelled']),
             'note' => $this->faker->optional()->paragraph(),
         ];

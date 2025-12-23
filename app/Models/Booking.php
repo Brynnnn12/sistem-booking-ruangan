@@ -18,6 +18,7 @@ class Booking extends Model
         'room_id',
         'user_id',
         'approved_by',
+        'booking_date',
         'start_time',
         'end_time',
         'status',
@@ -25,8 +26,7 @@ class Booking extends Model
     ];
 
     protected $casts = [
-        'start_time' => 'datetime',
-        'end_time'   => 'datetime',
+        'booking_date' => 'date',
     ];
 
     /* ================= Relations ================= */
@@ -67,7 +67,13 @@ class Booking extends Model
     {
         return $query
             ->where('status', self::STATUS_APPROVED)
-            ->where('end_time', '>', now());
+            ->where(function ($q) {
+                $q->where('booking_date', '>', now()->toDateString())
+                    ->orWhere(function ($sub) {
+                        $sub->where('booking_date', '=', now()->toDateString())
+                            ->whereTime('end_time', '>', now()->format('H:i:s'));
+                    });
+            });
     }
 
     /* ================= Helper Methods ================= */

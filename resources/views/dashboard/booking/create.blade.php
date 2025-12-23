@@ -78,41 +78,77 @@
                                     </h3>
 
                                     <div class="space-y-4">
+                                        <!-- Booking Date -->
+                                        <div>
+                                            <label for="booking_date"
+                                                class="block text-sm font-medium text-gray-700 mb-1">
+                                                <i class="fas fa-calendar mr-1"></i>
+                                                Tanggal Booking
+                                            </label>
+                                            <input type="date" id="booking_date" name="booking_date"
+                                                class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                                min="{{ date('Y-m-d') }}" value="{{ old('booking_date') }}" required>
+                                            @error('booking_date')
+                                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                            @enderror
+                                        </div>
+
                                         <!-- Start Time -->
                                         <div>
                                             <label for="start_time"
                                                 class="block text-sm font-medium text-gray-700 mb-1">
-                                                Waktu Mulai
+                                                <i class="fas fa-clock mr-1"></i>
+                                                Jam Mulai
                                             </label>
-                                            <input type="datetime-local" id="start_time" name="start_time"
+                                            <select id="start_time" name="start_time"
                                                 class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                                                 required>
+                                                <option value="">Pilih Jam Mulai</option>
+                                                @for ($hour = 7; $hour <= 22; $hour++)
+                                                    <option value="{{ sprintf('%02d:00', $hour) }}"
+                                                        {{ old('start_time') == sprintf('%02d:00', $hour) ? 'selected' : '' }}>
+                                                        {{ sprintf('%02d:00', $hour) }}
+                                                    </option>
+                                                @endfor
+                                            </select>
                                             @error('start_time')
                                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                             @enderror
+                                            <p class="mt-1 text-xs text-gray-500">Jam operasional: 07:00 - 22:00</p>
                                         </div>
 
                                         <!-- End Time -->
                                         <div>
                                             <label for="end_time" class="block text-sm font-medium text-gray-700 mb-1">
-                                                Waktu Selesai
+                                                <i class="fas fa-clock mr-1"></i>
+                                                Jam Selesai
                                             </label>
-                                            <input type="datetime-local" id="end_time" name="end_time"
+                                            <select id="end_time" name="end_time"
                                                 class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                                                 required>
+                                                <option value="">Pilih Jam Selesai</option>
+                                                @for ($hour = 8; $hour <= 23; $hour++)
+                                                    <option value="{{ sprintf('%02d:00', $hour) }}"
+                                                        {{ old('end_time') == sprintf('%02d:00', $hour) ? 'selected' : '' }}>
+                                                        {{ sprintf('%02d:00', $hour) }}
+                                                    </option>
+                                                @endfor
+                                            </select>
                                             @error('end_time')
                                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                             @enderror
+                                            <p class="mt-1 text-xs text-gray-500">Minimal booking 1 jam</p>
                                         </div>
 
                                         <!-- Note -->
                                         <div>
                                             <label for="note" class="block text-sm font-medium text-gray-700 mb-1">
+                                                <i class="fas fa-sticky-note mr-1"></i>
                                                 Catatan (Opsional)
                                             </label>
                                             <textarea id="note" name="note" rows="3"
                                                 class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                                                placeholder="Tambahkan catatan untuk booking ini..."></textarea>
+                                                placeholder="Tambahkan catatan untuk booking ini...">{{ old('note') }}</textarea>
                                             @error('note')
                                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                             @enderror

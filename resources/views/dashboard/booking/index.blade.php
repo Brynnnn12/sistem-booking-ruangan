@@ -49,8 +49,8 @@
                 <tr class="*:font-medium *:text-gray-900">
                     <th class="px-3 py-2 whitespace-nowrap">Ruangan</th>
                     <th class="px-3 py-2 whitespace-nowrap">User</th>
-                    <th class="px-3 py-2 whitespace-nowrap">Waktu Mulai</th>
-                    <th class="px-3 py-2 whitespace-nowrap">Waktu Akhir</th>
+                    <th class="px-3 py-2 whitespace-nowrap">Tanggal</th>
+                    <th class="px-3 py-2 whitespace-nowrap">Waktu</th>
                     <th class="px-3 py-2 whitespace-nowrap">Status</th>
                     <th class="px-3 py-2 whitespace-nowrap">Aksi</th>
                 </tr>
@@ -61,8 +61,9 @@
                     <tr class="*:text-gray-900 *:first:font-medium">
                         <td class="px-3 py-2 whitespace-nowrap">{{ $booking->room->name }}</td>
                         <td class="px-3 py-2 whitespace-nowrap">{{ $booking->user->name }}</td>
-                        <td class="px-3 py-2 whitespace-nowrap">{{ $booking->start_time->format('d/m/Y H:i') }}</td>
-                        <td class="px-3 py-2 whitespace-nowrap">{{ $booking->end_time->format('d/m/Y H:i') }}</td>
+                        <td class="px-3 py-2 whitespace-nowrap">{{ $booking->booking_date->format('d/m/Y') }}</td>
+                        <td class="px-3 py-2 whitespace-nowrap">{{ $booking->start_time }} - {{ $booking->end_time }}
+                        </td>
                         <td class="px-3 py-2 whitespace-nowrap">
                             @if ($booking->status === 'pending')
                                 <span

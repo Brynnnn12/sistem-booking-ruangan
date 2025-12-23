@@ -34,11 +34,11 @@ class RoomService
 
     public function delete(Room $room): void
     {
-        // if ($room->bookings()->exists()) {
-        //     throw new DomainException(
-        //         'Ruangan tidak dapat dihapus karena memiliki riwayat booking.'
-        //     );
-        // }
+        if ($room->bookings()->active()->exists()) {
+            throw new DomainException(
+                'Ruangan tidak dapat dihapus karena masih memiliki booking aktif.'
+            );
+        }
 
         $this->roomRepository->delete($room);
     }

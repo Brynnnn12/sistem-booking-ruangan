@@ -21,29 +21,36 @@ class StoreBookingRequest extends FormRequest
      */
     public function rules(): array
     {
-        return array_filter([
-            'room_id'    => 'required|exists:rooms,id',
-            'user_id'    => null, // Always from auth
-            'start_time' => 'required|date|after:now',
-            'end_time'   => 'required|date|after:start_time',
-            'note'       => 'nullable|string|max:1000',
-        ]);
+        return [
+            'room_id'       => ['required', 'exists:rooms,id'],
+            'booking_date'  => ['required', 'date', 'after_or_equal:today'],
+            'start_time'    => ['required', 'date_format:H:i', 'after_or_equal:07:00', 'before_or_equal:22:00'],
+            'end_time'      => ['required', 'date_format:H:i', 'after:start_time', 'after_or_equal:08:00', 'before_or_equal:23:00'],
+            'note'          => ['nullable', 'string', 'max:1000'],
+        ];
     }
 
-
+    /**
+     * Get custom messages for validator errors.
+     */
     public function messages(): array
     {
         return [
-            'room_id.required' => 'Ruangan wajib dipilih.',
-            'room_id.exists' => 'Ruangan tidak ditemukan.',
-            'start_time.required' => 'Waktu mulai wajib diisi.',
-            'start_time.date' => 'Format waktu mulai tidak valid.',
-            'start_time.after' => 'Waktu mulai harus setelah waktu saat ini.',
-            'end_time.required' => 'Waktu selesai wajib diisi.',
-            'end_time.date' => 'Format waktu selesai tidak valid.',
-            'end_time.after' => 'Waktu selesai harus setelah waktu mulai.',
-            'note.string' => 'Catatan harus berupa teks.',
-            'note.max' => 'Catatan maksimal 1000 karakter.',
+            'room_id.required'          => 'Ruangan wajib dipilih.',
+            'room_id.exists'            => 'Ruangan tidak ditemukan.',
+            'booking_date.required'     => 'Tanggal booking wajib diisi.',
+            'booking_date.date'         => 'Format tanggal tidak valid.',
+            'booking_date.after_or_equal' => 'Tanggal booking minimal hari ini.',
+            'start_time.required'       => 'Jam mulai wajib diisi.',
+            'start_time.date_format'    => 'Format jam mulai tidak valid (HH:MM).',
+            'start_time.after_or_equal' => 'Jam mulai minimal 07:00.',
+            'start_time.before_or_equal' => 'Jam mulai maksimal 22:00.',
+            'end_time.required'         => 'Jam selesai wajib diisi.',
+            'end_time.date_format'      => 'Format jam selesai tidak valid (HH:MM).',
+            'end_time.after'            => 'Jam selesai harus setelah jam mulai.',
+            'end_time.after_or_equal'   => 'Jam selesai minimal 08:00.',
+            'end_time.before_or_equal'  => 'Jam selesai maksimal 23:00.',
+            'note.max'                  => 'Catatan maksimal 1000 karakter.',
         ];
     }
 

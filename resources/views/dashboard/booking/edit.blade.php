@@ -33,20 +33,48 @@
                         <x-partials.input-error :messages="$errors->get('room_id')" class="mt-2" />
                     </div>
 
+                    <!-- Booking Date -->
+                    <div>
+                        <x-partials.input-label for="booking_date" :value="__('Tanggal Booking')" />
+                        <x-partials.text-input id="booking_date" class="block mt-1 w-full" type="date"
+                            name="booking_date" :value="old('booking_date', $booking->booking_date->format('Y-m-d'))" min="{{ date('Y-m-d') }}" required />
+                        <x-partials.input-error :messages="$errors->get('booking_date')" class="mt-2" />
+                    </div>
+
                     <!-- Start Time -->
                     <div>
-                        <x-partials.input-label for="start_time" :value="__('Waktu Mulai')" />
-                        <x-partials.text-input id="start_time" class="block mt-1 w-full" type="datetime-local"
-                            name="start_time" :value="old('start_time', $booking->start_time->format('Y-m-d\TH:i'))" required />
+                        <x-partials.input-label for="start_time" :value="__('Jam Mulai')" />
+                        <select id="start_time" name="start_time"
+                            class="block mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                            required>
+                            <option value="">Pilih Jam Mulai</option>
+                            @for ($hour = 7; $hour <= 22; $hour++)
+                                <option value="{{ sprintf('%02d:00', $hour) }}"
+                                    {{ old('start_time', substr($booking->start_time, 0, 5)) == sprintf('%02d:00', $hour) ? 'selected' : '' }}>
+                                    {{ sprintf('%02d:00', $hour) }}
+                                </option>
+                            @endfor
+                        </select>
                         <x-partials.input-error :messages="$errors->get('start_time')" class="mt-2" />
+                        <p class="mt-1 text-xs text-gray-500">Jam operasional: 07:00 - 22:00</p>
                     </div>
 
                     <!-- End Time -->
                     <div>
-                        <x-partials.input-label for="end_time" :value="__('Waktu Selesai')" />
-                        <x-partials.text-input id="end_time" class="block mt-1 w-full" type="datetime-local"
-                            name="end_time" :value="old('end_time', $booking->end_time->format('Y-m-d\TH:i'))" required />
+                        <x-partials.input-label for="end_time" :value="__('Jam Selesai')" />
+                        <select id="end_time" name="end_time"
+                            class="block mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                            required>
+                            <option value="">Pilih Jam Selesai</option>
+                            @for ($hour = 8; $hour <= 23; $hour++)
+                                <option value="{{ sprintf('%02d:00', $hour) }}"
+                                    {{ old('end_time', substr($booking->end_time, 0, 5)) == sprintf('%02d:00', $hour) ? 'selected' : '' }}>
+                                    {{ sprintf('%02d:00', $hour) }}
+                                </option>
+                            @endfor
+                        </select>
                         <x-partials.input-error :messages="$errors->get('end_time')" class="mt-2" />
+                        <p class="mt-1 text-xs text-gray-500">Minimal booking 1 jam</p>
                     </div>
 
                     <!-- Note -->
