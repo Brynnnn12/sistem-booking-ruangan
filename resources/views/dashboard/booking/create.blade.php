@@ -19,6 +19,14 @@
                                 class="bg-gray-50 border border-gray-200 rounded-lg p-6 hover:shadow-lg transition-shadow">
                                 <div class="flex items-start justify-between">
                                     <div class="flex-1">
+                                        <!-- Room Image -->
+                                        @if ($room->image)
+                                            <div class="mb-4">
+                                                <img src="{{ $room->image }}" alt="{{ $room->name }}"
+                                                    class="w-full h-32 object-cover rounded-lg">
+                                            </div>
+                                        @endif
+
                                         <h3 class="text-lg font-semibold text-gray-900 mb-2">
                                             <i class="fas fa-building mr-2 text-blue-600"></i>
                                             {{ $room->name }}

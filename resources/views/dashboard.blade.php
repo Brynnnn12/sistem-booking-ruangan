@@ -15,11 +15,29 @@
                 <div class="bg-white overflow-hidden shadow-sm rounded-lg border border-gray-100">
                     <div class="p-6">
                         <div class="flex items-center justify-between mb-4">
-                            <h3 class="text-lg font-semibold text-gray-900">Statistik Booking (30 Hari Terakhir)</h3>
+                            <h3 class="text-lg font-semibold text-gray-900">Statistik Booking (7 Hari Terakhir)</h3>
                             <span class="text-xs font-medium text-gray-400 uppercase tracking-wider">Live Report</span>
                         </div>
-                        <div class="relative" style="height: 350px;">
-                            <canvas id="bookingsChart"></canvas>
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            <!-- Chart 1: Confirmed Bookings -->
+                            <div class="border border-gray-200 rounded-lg p-4">
+                                <h4 class="text-md font-medium text-gray-700 mb-3">
+                                    <i class="fas fa-check-circle text-green-500 mr-2"></i>Booking Dikonfirmasi
+                                </h4>
+                                <div style="height: 300px;">
+                                    <canvas id="confirmedChart"></canvas>
+                                </div>
+                            </div>
+
+                            <!-- Chart 2: Pending Bookings -->
+                            <div class="border border-gray-200 rounded-lg p-4">
+                                <h4 class="text-md font-medium text-gray-700 mb-3">
+                                    <i class="fas fa-clock text-yellow-500 mr-2"></i>Booking Pending
+                                </h4>
+                                <div style="height: 300px;">
+                                    <canvas id="pendingChart"></canvas>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -117,58 +135,71 @@
             {{-- Kita berasumsi Chart.js sudah di-import di app.js via Vite --}}
             <script>
                 document.addEventListener('DOMContentLoaded', function() {
-                    const canvas = document.getElementById('bookingsChart');
-                    if (!canvas) return;
+                    const confirmedCanvas = document.getElementById('confirmedChart');
+                    const pendingCanvas = document.getElementById('pendingChart');
 
-                    const ctx = canvas.getContext('2d');
+                    if (!confirmedCanvas || !pendingCanvas) return;
 
-                    // Gradien warna untuk chart agar lebih modern
-                    const gradient = ctx.createLinearGradient(0, 0, 0, 400);
-                    gradient.addColorStop(0, 'rgba(79, 70, 229, 0.4)');
-                    gradient.addColorStop(1, 'rgba(79, 70, 229, 0)');
-
-                    new Chart(ctx, {
-                        type: 'line',
-                        data: {
-                            labels: @json($chartLabels),
-                            datasets: [{
-                                label: 'Jumlah Booking',
-                                data: @json($chartData),
-                                borderColor: '#4f46e5',
-                                backgroundColor: gradient,
-                                borderWidth: 3,
-                                fill: true,
-                                tension: 0.4,
-                                pointRadius: 2,
-                                pointHoverRadius: 6,
-                                pointBackgroundColor: '#4f46e5',
-                            }]
+                    const chartOptions = {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
                         },
-                        options: {
-                            responsive: true,
-                            maintainAspectRatio: false,
-                            plugins: {
-                                legend: {
-                                    display: false
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                grid: {
+                                    color: '#f3f4f6'
+                                },
+                                ticks: {
+                                    stepSize: 1
                                 }
                             },
-                            scales: {
-                                y: {
-                                    beginAtZero: true,
-                                    grid: {
-                                        color: '#f3f4f6'
-                                    },
-                                    ticks: {
-                                        stepSize: 1
-                                    }
-                                },
-                                x: {
-                                    grid: {
-                                        display: false
-                                    }
+                            x: {
+                                grid: {
+                                    display: false
                                 }
                             }
                         }
+                    };
+
+                    // Chart 1: Confirmed Bookings
+                    new Chart(confirmedCanvas.getContext('2d'), {
+                        type: 'bar',
+                        data: {
+                            labels: @json($chartLabels),
+                            datasets: [{
+                                label: 'Booking Dikonfirmasi',
+                                data: @json($confirmedData),
+                                backgroundColor: '#10b981',
+                                borderColor: '#059669',
+                                borderWidth: 1,
+                                borderRadius: 4,
+                                hoverBackgroundColor: '#059669'
+                            }]
+                        },
+                        options: chartOptions
+                    });
+
+                    // Chart 2: Pending Bookings
+                    new Chart(pendingCanvas.getContext('2d'), {
+                        type: 'bar',
+                        data: {
+                            labels: @json($chartLabels),
+                            datasets: [{
+                                label: 'Booking Pending',
+                                data: @json($pendingData),
+                                backgroundColor: '#f59e0b',
+                                borderColor: '#d97706',
+                                borderWidth: 1,
+                                borderRadius: 4,
+                                hoverBackgroundColor: '#d97706'
+                            }]
+                        },
+                        options: chartOptions
                     });
                 });
             </script>

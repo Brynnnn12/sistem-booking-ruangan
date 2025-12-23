@@ -22,32 +22,36 @@ class DashboardController extends Controller
                 ->selectRaw('(SELECT count(*) FROM bookings) as bookings')
                 ->first();
 
-            // 2. Ambil data booking 30 hari terakhir
-            $bookingsLast30Days = Booking::selectRaw('DATE(created_at) as date, count(*) as count')
-                ->where('created_at', '>=', now()->subDays(30))
-                ->groupBy('date')
-                ->get()
-                ->pluck('count', 'date');
-
-            // 3. Generate Labels & Data menggunakan CarbonPeriod
-            $period = CarbonPeriod::create(now()->subDays(29), now());
-
+            // 2. Ambil data booking 7 hari terakhir berdasarkan status
+            $period = CarbonPeriod::create(now()->subDays(6), now());
             $chartLabels = [];
-            $chartData = [];
+            $confirmedData = [];
+            $pendingData = [];
 
             foreach ($period as $date) {
                 $formattedDate = $date->format('Y-m-d');
                 $chartLabels[] = $date->format('M d');
-                $chartData[] = $bookingsLast30Days[$formattedDate] ?? 0;
+
+                $confirmed = Booking::whereDate('created_at', $formattedDate)
+                    ->where('status', 'confirmed')
+                    ->count();
+
+                $pending = Booking::whereDate('created_at', $formattedDate)
+                    ->where('status', 'pending')
+                    ->count();
+
+                $confirmedData[] = $confirmed;
+                $pendingData[] = $pending;
             }
 
             return view('dashboard', [
-                'isAdmin'       => true,
-                'totalRooms'    => $stats->rooms ?? 0,
-                'totalUsers'    => $stats->users ?? 0,
-                'totalBookings' => $stats->bookings ?? 0,
-                'chartLabels'   => $chartLabels,
-                'chartData'     => $chartData
+                'isAdmin'        => true,
+                'totalRooms'     => $stats->rooms ?? 0,
+                'totalUsers'     => $stats->users ?? 0,
+                'totalBookings'  => $stats->bookings ?? 0,
+                'chartLabels'    => $chartLabels,
+                'confirmedData'  => $confirmedData,
+                'pendingData'    => $pendingData
             ]);
         }
 

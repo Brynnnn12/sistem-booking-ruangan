@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('name', 30)->index();
             $table->string('location');
             $table->integer('capacity');
+            $table->string('image')->nullable();
             $table->boolean('is_active')->default(true);
             $table->timestamps();
         });

@@ -62,7 +62,9 @@
                         <td class="px-3 py-2 whitespace-nowrap">{{ $booking->room->name }}</td>
                         <td class="px-3 py-2 whitespace-nowrap">{{ $booking->user->name }}</td>
                         <td class="px-3 py-2 whitespace-nowrap">{{ $booking->booking_date->format('d/m/Y') }}</td>
+
                         <td class="px-3 py-2 whitespace-nowrap">{{ $booking->start_time }} - {{ $booking->end_time }}
+                            WIB
                         </td>
                         <td class="px-3 py-2 whitespace-nowrap">
                             @if ($booking->status === 'pending')

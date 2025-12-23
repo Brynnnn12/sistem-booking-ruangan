@@ -52,6 +52,7 @@
             <thead class="sticky top-0 bg-white ltr:text-left rtl:text-right">
                 <tr class="*:font-medium *:text-gray-900">
                     <th class="px-3 py-2 whitespace-nowrap">Nama</th>
+                    <th class="px-3 py-2 whitespace-nowrap">Gambar</th>
                     <th class="px-3 py-2 whitespace-nowrap">Lokasi</th>
                     <th class="px-3 py-2 whitespace-nowrap">Kapasitas</th>
                     <th class="px-3 py-2 whitespace-nowrap">Status Aktif</th>
@@ -63,6 +64,13 @@
                 @forelse ($rooms as $room)
                     <tr class="*:text-gray-900 *:first:font-medium">
                         <td class="px-3 py-2 whitespace-nowrap">{{ $room->name }}</td>
+                        <td class="px-3 py-2 whitespace-nowrap">
+                            @if ($room->image)
+                                <img src="{{ $room->image }}" alt="Room Image" class="w-16 h-16 object-cover rounded">
+                            @else
+                                <span class="text-gray-500">No image</span>
+                            @endif
+                        </td>
                         <td class="px-3 py-2 whitespace-nowrap">{{ $room->location }}</td>
                         <td class="px-3 py-2 whitespace-nowrap">{{ $room->capacity }}</td>
                         <td class="px-3 py-2 whitespace-nowrap">
@@ -96,7 +104,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="5" class="px-3 py-2 text-center text-gray-500">
+                        <td colspan="6" class="px-3 py-2 text-center text-gray-500">
                             Tidak Ada Ruangan Yang Tersedia.
                         </td>
                     </tr>

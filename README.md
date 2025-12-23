@@ -51,12 +51,20 @@ Aplikasi web yang menyediakan:
 
 -   **CRUD Operations** (Admin only)
     -   Create, Read, Update, Delete ruangan
-    -   Informasi: Nama, Lokasi, Kapasitas
+    -   Upload gambar ruangan untuk visual preview
+    -   Informasi: Nama, Lokasi, Kapasitas, Gambar
     -   Status aktif/non-aktif untuk maintenance
+    -   Auto-delete gambar saat room dihapus
 -   **Room Listing** (All authenticated users)
-    -   Filter berdasarkan kapasitas
+    -   Tampilan gambar ruangan di card view
+    -   Filter berdasarkan kapasitas dan status
     -   Search by nama/lokasi
     -   Display availability status
+-   **Image Management**
+    -   Upload gambar dengan validasi (JPEG, PNG, JPG, GIF)
+    -   Maksimal ukuran 2MB
+    -   Penamaan file sistematis: `rooms-{slug}-{timestamp}.ext`
+    -   Auto-cleanup gambar lama saat update/delete
 
 ### 📅 Booking Management
 
@@ -73,8 +81,9 @@ Aplikasi web yang menyediakan:
     -   Detail informasi booking
 -   ✅ **Edit/Cancel Booking**
     -   Update booking pending (belum diapprove)
-    -   Cancel booking pending
-    -   Tidak bisa ubah/cancel booking yang sudah approved
+    -   Tidak bisa mengubah ruangan saat edit (room locked)
+    -   Cancel booking pending milik sendiri
+    -   Tidak bisa ubah/cancel booking yang sudah approved/rejected
 
 #### **Untuk Admin:**
 
@@ -85,7 +94,9 @@ Aplikasi web yang menyediakan:
     -   Approve/Reject booking pending
     -   Recorded approval history (approved_by)
 -   ✅ **Cancel Any Booking**
-    -   Cancel booking apapun (force cancel untuk emergency)
+    -   Cancel booking dengan status pending/rejected
+    -   Tidak bisa cancel booking yang sudah approved (business rule)
+    -   Full audit trail untuk setiap action
 
 ### 🔍 Conflict Detection
 
@@ -99,12 +110,18 @@ Aplikasi web yang menyediakan:
 ### 📊 Dashboard & Reporting
 
 -   **Role-based Dashboard**
-    -   Admin: Overview stats, recent bookings, charts
-    -   Staff: Upcoming meetings, quick booking access
--   **Charts & Analytics** (Chart.js)
-    -   Booking trends
-    -   Room utilization
-    -   Popular time slots
+    -   Admin: Overview stats (total rooms, users, bookings), dual bar charts
+    -   Staff: Personal bookings overview, quick access menu
+-   **Interactive Charts** (Chart.js)
+    -   **Chart 1**: Confirmed Bookings - 7 hari terakhir (bar chart hijau)
+    -   **Chart 2**: Pending Bookings - 7 hari terakhir (bar chart orange)
+    -   Side-by-side comparison untuk monitoring approval status
+    -   Responsive dan interactive hover tooltips
+-   **Real-time Statistics**
+    -   Total rooms available
+    -   Total registered users
+    -   Total bookings (all time)
+    -   Daily/weekly trends
 
 ### 🎨 UI/UX Features
 
@@ -190,6 +207,7 @@ id          BIGINT (PK, Auto Increment)
 name        VARCHAR(255)              -- Nama ruangan
 location    VARCHAR(255)              -- Lokasi/lantai
 capacity    INTEGER                   -- Kapasitas orang
+image       VARCHAR(255) NULLABLE     -- Path gambar ruangan
 is_active   BOOLEAN DEFAULT TRUE      -- Status aktif
 created_at  TIMESTAMP
 updated_at  TIMESTAMP
@@ -198,19 +216,22 @@ updated_at  TIMESTAMP
 ### Table: bookings
 
 ```sql
-id           BIGINT (PK, Auto Increment)
-room_id      BIGINT (FK → rooms.id) ON DELETE CASCADE
-user_id      BIGINT (FK → users.id) ON DELETE CASCADE
-approved_by  BIGINT NULLABLE (FK → users.id) ON DELETE SET NULL
-start_time   DATETIME                 -- Waktu mulai booking
-end_time     DATETIME                 -- Waktu selesai booking
-status       ENUM('pending', 'approved', 'rejected', 'cancelled') DEFAULT 'pending'
-note         TEXT NULLABLE            -- Catatan/keperluan meeting
-created_at   TIMESTAMP
-updated_at   TIMESTAMP
+id             BIGINT (PK, Auto Increment)
+room_id        BIGINT (FK → rooms.id) ON DELETE CASCADE
+user_id        BIGINT (FK → users.id) ON DELETE CASCADE
+approved_by    BIGINT NULLABLE (FK → users.id) ON DELETE SET NULL
+booking_date   DATE                     -- Tanggal booking
+start_time     TIME                     -- Waktu mulai booking
+end_time       TIME                     -- Waktu selesai booking
+status         ENUM('pending', 'approved', 'rejected', 'cancelled') DEFAULT 'pending'
+note           TEXT NULLABLE            -- Catatan/keperluan meeting
+created_at     TIMESTAMP
+updated_at     TIMESTAMP
 
 -- Indexes untuk optimasi query conflict checking
-INDEX idx_room_time (room_id, start_time, end_time)
+INDEX idx_room_date_time (room_id, booking_date, start_time, end_time)
+INDEX idx_status (status)
+INDEX idx_user_id (user_id)
 ```
 
 ### Relasi Database
@@ -248,6 +269,7 @@ app/
 │   ├── Controllers/
 │   │   ├── BookingController.php    # Handle HTTP requests booking
 │   │   ├── RoomController.php       # Handle HTTP requests room
+│   │   ├── DashboardController.php  # Handle dashboard logic
 │   │   └── ProfileController.php
 │   └── Requests/
 │       ├── Booking/
@@ -266,9 +288,11 @@ app/
 ├── Repositories/
 │   ├── BookingRepository.php        # Data access layer booking
 │   └── RoomRepository.php           # Data access layer room
-└── Services/
-    ├── BookingService.php           # Business logic booking
-    └── RoomService.php              # Business logic room
+├── Services/
+│   ├── BookingService.php           # Business logic booking
+│   └── RoomService.php              # Business logic room
+└── Traits/
+    └── ImageHandler.php             # Reusable image upload/delete logic
 
 resources/
 ├── views/
@@ -311,40 +335,47 @@ tests/
 
 ### Booking Rules
 
-| Rule                    | Implementation                        | Validation               |
-| ----------------------- | ------------------------------------- | ------------------------ |
-| **No Overlapping**      | Query check approved bookings         | `hasOverlap()` method    |
-| **Status Flow**         | pending → approved/rejected/cancelled | Enum validation          |
-| **Edit Permission**     | Only pending bookings can be edited   | Policy check             |
-| **Cancel Permission**   | Staff: own pending, Admin: all        | BookingPolicy            |
-| **Approval Permission** | Admin only, pending only              | `approve()` & `reject()` |
+| Rule                    | Implementation                                   | Validation               |
+| ----------------------- | ------------------------------------------------ | ------------------------ |
+| **No Overlapping**      | Query check approved bookings by date & time     | `hasOverlap()` method    |
+| **Status Flow**         | pending → approved/rejected/cancelled            | Enum validation          |
+| **Edit Permission**     | Only pending bookings editable by owner          | Policy check             |
+| **Delete Permission**   | Staff: own pending only, Admin: all              | BookingPolicy            |
+| **Cancel Permission**   | Staff: own pending, Admin: pending/rejected only | BookingPolicy            |
+| **Approval Permission** | Admin only, pending only                         | `approve()` & `reject()` |
+| **Room Lock on Edit**   | Cannot change room when editing booking          | Hidden input in form     |
+| **Booking Limit**       | Maximum 2 bookings per user per day              | Service validation       |
 
 ### Room Rules
 
-| Rule          | Validation                   |
-| ------------- | ---------------------------- |
-| **Name**      | Required, max 255 characters |
-| **Location**  | Required, max 255 characters |
-| **Capacity**  | Required, minimum 1 person   |
-| **is_active** | Boolean, default true        |
+| Rule          | Validation                              |
+| ------------- | --------------------------------------- |
+| **Name**      | Required, max 255 characters, unique    |
+| **Location**  | Required, max 500 characters            |
+| **Capacity**  | Required, minimum 1 person              |
+| **Image**     | Optional, max 2MB, JPEG/PNG/JPG/GIF     |
+| **is_active** | Boolean, default true                   |
+| **Delete**    | Blocked if has active bookings          |
 
 ### Conflict Detection Algorithm
 
 ```php
 // Cek overlap dengan kondisi:
 // 1. Same room_id
-// 2. Status = 'approved'
-// 3. Time range overlaps:
-//    - New start antara existing start-end
-//    - New end antara existing start-end
+// 2. Same booking_date
+// 3. Status = 'approved'
+// 4. Time range overlaps:
+//    - New start time antara existing start-end
+//    - New end time antara existing start-end
 //    - New booking encompass existing booking
 
 WHERE room_id = ?
+  AND booking_date = ?
   AND status = 'approved'
   AND (
-    (start_time BETWEEN ? AND ?)
-    OR (end_time BETWEEN ? AND ?)
-    OR (start_time <= ? AND end_time >= ?)
+    (start_time < ? AND end_time > ?)  -- Encompasses new booking
+    OR (start_time >= ? AND start_time < ?)  -- Starts during new booking
+    OR (end_time > ? AND end_time <= ?)  -- Ends during new booking
   )
 ```
 
@@ -583,15 +614,24 @@ php artisan test --verbose
 
 #### 1. Dashboard
 
--   **Admin Dashboard**: Stats cards, charts (Chart.js), recent bookings table
--   **Staff Dashboard**: Upcoming meetings, quick booking button, room availability
+-   **Admin Dashboard**: 
+    -   3 stat cards (Total Rooms, Total Users, Total Bookings)
+    -   Dual bar charts side-by-side:
+        - Confirmed bookings (7 hari, hijau)
+        - Pending bookings (7 hari, orange)
+    -   Responsive grid layout
+-   **Staff Dashboard**: 
+    -   Welcome banner dengan total booking counter
+    -   Table riwayat booking (10 terakhir)
+    -   Quick access ke create booking
 
 #### 2. Room Selection (Booking Create)
 
--   **Time Picker**: Native datetime-local untuk pilih waktu
--   **Real-time Filtering**: Alpine.js untuk filter ruangan available
--   **Interactive Cards**: Click card to open booking modal
--   **Loading States**: Spinner saat fetch available rooms
+-   **Room Cards with Images**: Grid layout dengan preview gambar
+-   **Time Dropdown Selectors**: Select untuk jam mulai (07:00-22:00) dan jam selesai (08:00-23:00)
+-   **Modal Form**: Alpine.js modal untuk booking details
+-   **Room Information**: Nama, lokasi, kapasitas, gambar di card
+-   **Date Picker**: Native date input dengan min=today
 
 #### 3. Booking Table
 
@@ -617,11 +657,12 @@ php artisan test --verbose
 
 ### Color Scheme (Tailwind)
 
--   **Primary**: Blue (600-800) - Actions, links
--   **Success**: Green (600) - Approved status
--   **Warning**: Yellow (600) - Pending status
--   **Danger**: Red (600) - Rejected, Cancelled
--   **Neutral**: Gray (50-900) - Backgrounds, text
+-   **Primary**: Blue (600-800) - Actions, buttons, links
+-   **Success**: Green (500-800) - Approved status, confirm actions
+-   **Warning**: Yellow/Orange (500-800) - Pending status, warnings
+-   **Danger**: Red (600-800) - Rejected, Cancelled, delete actions
+-   **Neutral**: Gray (50-900) - Backgrounds, borders, secondary text
+-   **Info**: Indigo (500-600) - Information, stats cards
 
 ---
 
@@ -842,18 +883,20 @@ docker-compose -f docker-compose.prod.yml up -d
 #### 3. Cancel Booking (Force Cancel)
 
 1. Sidebar → **Bookings**
-2. Pilih booking apapun (approved/pending)
+2. Pilih booking dengan status **Pending** atau **Rejected**
 3. Klik **Cancel**
 4. Confirmation dialog → Konfirmasi
 5. Status berubah ke Cancelled
+6. **Note**: Booking yang sudah **Approved** tidak bisa di-cancel (business rule)
 
 #### 4. Monitoring & Reports
 
-1. Dashboard → View stats
-    - Total bookings hari ini/minggu/bulan
-    - Room utilization chart
-    - Recent bookings
-2. Filter by room/user/date untuk custom report
+1. Dashboard → View statistics
+    - Total rooms, users, bookings
+    - **Confirmed bookings chart** (7 hari terakhir)
+    - **Pending bookings chart** (7 hari terakhir)
+2. Bookings page → Filter by room/user/status/date
+3. Export functionality (planned for future)
 
 ### Untuk Staff
 
@@ -861,12 +904,14 @@ docker-compose -f docker-compose.prod.yml up -d
 
 1. Login sebagai Staff
 2. Sidebar → **Create Booking**
-3. Pilih **waktu mulai** dan **waktu selesai**
-4. Sistem auto-filter ruangan yang available
-5. Klik **Book Sekarang** pada ruangan yang dipilih
-6. Isi **catatan** (optional) di modal
-7. **Buat Booking** → Status: Pending
-8. Tunggu admin approve
+3. Pilih **tanggal booking** (date picker)
+4. Pilih **jam mulai** dari dropdown (07:00-22:00)
+5. Pilih **jam selesai** dari dropdown (08:00-23:00)
+6. Sistem menampilkan ruangan available dengan gambar
+7. Klik **Book Sekarang** pada ruangan yang dipilih
+8. Modal muncul → Isi **catatan** (optional)
+9. **Buat Booking** → Status: Pending
+10. Tunggu admin approve
 
 #### 2. Lihat Booking Saya
 
@@ -878,9 +923,11 @@ docker-compose -f docker-compose.prod.yml up -d
 
 1. My Bookings → Pilih booking **Pending**
 2. Klik **Edit**
-3. Ubah waktu/catatan
-4. Sistem cek conflict otomatis
-5. **Save** jika tidak ada conflict
+3. **Ruangan terkunci** (tidak bisa diubah)
+4. Ubah tanggal/waktu/catatan
+5. Sistem cek conflict otomatis
+6. **Save** jika tidak ada conflict
+7. **Note**: Hanya booking pending yang bisa diedit
 
 #### 4. Cancel Booking (Jika Pending)
 
@@ -889,6 +936,7 @@ docker-compose -f docker-compose.prod.yml up -d
 3. Confirmation dialog → Konfirmasi
 4. Status berubah ke Cancelled
 5. Ruangan available lagi untuk user lain
+6. **Note**: Booking approved/rejected tidak bisa di-cancel oleh staff
 
 ---
 
@@ -971,48 +1019,61 @@ DB_DATABASE=:memory:
 
 ### Planned Features (Roadmap)
 
-#### Phase 2: Notifications
+#### Phase 2: Enhanced User Experience
 
 -   [ ] **Email Notifications**
-    -   Booking approved/rejected
+    -   Booking approved/rejected notification
     -   Booking reminder (1 day before)
     -   Admin notification untuk new booking
--   [ ] **Push Notifications** (via Firebase/Pusher)
--   [ ] **In-app Notifications** dengan badge counter
+-   [ ] **Room Facilities**
+    -   Multiple images per room (gallery)
+    -   Facility tags (projector, whiteboard, video conference)
+    -   Filter rooms by facilities
+-   [ ] **Booking History Export**
+    -   Export to PDF/Excel
+    -   Custom date range reports
+    -   Email reports to admin
 
 #### Phase 3: Advanced Booking
 
 -   [ ] **Recurring Bookings**
     -   Daily/Weekly/Monthly patterns
     -   Bulk create dengan conflict check
+    -   Smart scheduling suggestions
 -   [ ] **Booking Templates**
     -   Save frequently used booking settings
     -   Quick book dengan template
--   [ ] **Equipment/Amenities**
-    -   Projector, whiteboard, video conference
-    -   Filter rooms by amenities
+    -   Team-based templates
+-   [ ] **Waiting List**
+    -   Auto-notify saat ruangan available
+    -   Priority queue system
 
 #### Phase 4: Integration
 
 -   [ ] **Calendar Export** (iCal format)
 -   [ ] **Google Calendar Sync**
 -   [ ] **Microsoft Outlook Integration**
--   [ ] **Slack/Discord Webhooks**
+-   [ ] **Slack/Teams Webhooks**
+-   [ ] **QR Code Check-in**
 
 #### Phase 5: Analytics & Reporting
 
 -   [ ] **Advanced Analytics Dashboard**
     -   Peak hours heatmap
-    -   Room utilization trends
+    -   Room utilization rate (%)
     -   User booking patterns
--   [ ] **Export Reports** (PDF, Excel)
--   [ ] **Custom Date Range Reports**
+    -   Monthly/yearly trends
+-   [ ] **Custom Reports**
+    -   Departmental usage reports
+    -   Cost center allocation
+    -   Compliance reports
 
-#### Phase 6: Mobile
+#### Phase 6: Mobile & API
 
 -   [ ] **Progressive Web App (PWA)**
+-   [ ] **RESTful API** untuk mobile apps
 -   [ ] **Mobile App** (React Native/Flutter)
--   [ ] **QR Code Check-in**
+-   [ ] **Mobile push notifications**
 
 ---
 
@@ -1145,23 +1206,50 @@ Give a ⭐️ if this project helped you!
 
 ## 📝 Changelog
 
-### [1.0.0] - 2025-12-22
+### [1.0.0] - 2025-12-23
 
 #### Added
 
--   ✅ Initial release
--   ✅ Authentication dengan Laravel Breeze
--   ✅ Role-based access control (Admin/Staff)
--   ✅ Room management (CRUD)
--   ✅ Booking management dengan approval workflow
--   ✅ Real-time conflict detection
--   ✅ Responsive UI dengan Tailwind CSS
--   ✅ Interactive features dengan Alpine.js
--   ✅ Charts dengan Chart.js
--   ✅ Beautiful alerts dengan SweetAlert2
--   ✅ Comprehensive testing (21 test cases)
--   ✅ Repository-Service pattern
--   ✅ Policy-based authorization
+-   ✅ Initial release dengan fitur lengkap
+-   ✅ Authentication dengan Laravel Breeze + email verification
+-   ✅ Role-based access control (Admin/Staff) via Spatie Permission
+-   ✅ **Room management** dengan image upload
+    -   CRUD operations (Admin only)
+    -   Image upload, preview, dan auto-cleanup
+    -   Penamaan file sistematis
+    -   Validation image (JPEG/PNG/GIF, max 2MB)
+-   ✅ **Booking management** dengan approval workflow
+    -   Create, read, update, delete bookings
+    -   Real-time conflict detection (room + date + time)
+    -   Status flow: pending → approved/rejected/cancelled
+    -   Room locked saat edit (tidak bisa ganti ruangan)
+    -   Booking limit: 2x per user per hari
+-   ✅ **Policy-based authorization**
+    -   Staff: CRUD booking pending miliknya
+    -   Admin: Full access semua bookings
+    -   Business rule: approved booking tidak bisa di-cancel
+-   ✅ **Dashboard interaktif**
+    -   Admin: Dual bar charts (confirmed vs pending, 7 hari)
+    -   Staff: Personal booking history
+    -   Real-time statistics
+-   ✅ **Responsive UI** dengan Tailwind CSS
+-   ✅ **Interactive features** dengan Alpine.js (modals, dropdowns)
+-   ✅ **Charts** dengan Chart.js (bar charts side-by-side)
+-   ✅ **Beautiful alerts** dengan SweetAlert2
+-   ✅ **Comprehensive testing** (21 test cases dengan Pest PHP)
+-   ✅ **Clean architecture**
+    -   Repository-Service pattern
+    -   ImageHandler trait untuk reusable code
+    -   Form Request validation
+    -   Policy-based authorization
+
+#### Technical Highlights
+
+-   **Database optimization**: Indexes untuk conflict checking
+-   **Separate date/time fields**: Better UX untuk booking
+-   **Image management**: Trait-based untuk reusability
+-   **Conflict algorithm**: Efficient query dengan date + time check
+-   **Code quality**: Laravel Pint, PSR-12 standard
 
 ---
 

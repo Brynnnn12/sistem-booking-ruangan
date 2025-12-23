@@ -14,6 +14,7 @@ class Room extends Model
         'name',
         'location',
         'capacity',
+        'image',
         'is_active',
     ];
 
@@ -57,5 +58,13 @@ class Room extends Model
     public function scopeActive(Builder $query): Builder
     {
         return $query->where('is_active', true);
+    }
+
+    public function getImageAttribute($value)
+    {
+        if (!$value) {
+            return null;
+        }
+        return url(\Illuminate\Support\Facades\Storage::url($value));
     }
 }

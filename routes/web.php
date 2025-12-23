@@ -19,7 +19,6 @@ Route::middleware(['auth', 'verified'])
         Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
         Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-        // nanti gampang nambah
         Route::resource('rooms', RoomController::class);
         Route::resource('bookings', BookingController::class);
         Route::patch('bookings/{booking}/approve', [BookingController::class, 'approve'])->name('bookings.approve');

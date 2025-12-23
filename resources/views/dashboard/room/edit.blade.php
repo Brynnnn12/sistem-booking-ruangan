@@ -12,7 +12,8 @@
                 </div>
 
                 <!-- Form -->
-                <form method="POST" action="{{ route('dashboard.rooms.update', $room) }}" class="p-6 space-y-6">
+                <form method="POST" action="{{ route('dashboard.rooms.update', $room) }}" enctype="multipart/form-data"
+                    class="p-6 space-y-6">
                     @csrf
                     @method('PUT')
 
@@ -38,6 +39,20 @@
                         <x-partials.text-input id="capacity" class="block mt-1 w-full" type="number" name="capacity"
                             :value="old('capacity', $room->capacity)" required min="1" />
                         <x-partials.input-error :messages="$errors->get('capacity')" class="mt-2" />
+                    </div>
+
+                    <!-- Image -->
+                    <div>
+                        <x-partials.input-label for="image" :value="__('Image')" />
+                        @if ($room->image)
+                            <div class="mb-2">
+                                <img src="{{ $room->image }}" alt="Current Image"
+                                    class="w-32 h-32 object-cover rounded">
+                            </div>
+                        @endif
+                        <input id="image" class="block mt-1 w-full" type="file" name="image"
+                            accept="image/*" />
+                        <x-partials.input-error :messages="$errors->get('image')" class="mt-2" />
                     </div>
 
                     <!-- Is Active -->

@@ -25,6 +25,7 @@ class StoreRoomRequest extends FormRequest
             'name' => 'required|string|max:255|unique:rooms,name',
             'location' => 'required|string|max:500',
             'capacity' => 'required|integer|min:1',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'is_active' => 'required|boolean',
         ];
     }
@@ -48,6 +49,9 @@ class StoreRoomRequest extends FormRequest
             'capacity.required' => 'Kapasitas ruangan wajib diisi.',
             'capacity.integer' => 'Kapasitas ruangan harus berupa angka.',
             'capacity.min' => 'Kapasitas ruangan minimal :min.',
+            'image.image' => 'File harus berupa gambar.',
+            'image.mimes' => 'Gambar harus berformat jpeg, png, jpg, atau gif.',
+            'image.max' => 'Ukuran gambar maksimal 2MB.',
             'is_active.boolean' => 'Status aktif harus berupa nilai benar atau salah.',
         ];
     }

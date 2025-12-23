@@ -19,17 +19,10 @@
                     <!-- Room -->
                     <div>
                         <x-partials.input-label for="room_id" :value="__('Ruangan')" />
-                        <select id="room_id" name="room_id"
-                            class="block mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                            required>
-                            <option value="">Pilih Ruangan</option>
-                            @foreach ($rooms as $room)
-                                <option value="{{ $room->id }}"
-                                    {{ old('room_id', $booking->room_id) == $room->id ? 'selected' : '' }}>
-                                    {{ $room->name }} - {{ $room->location }}
-                                </option>
-                            @endforeach
-                        </select>
+                        <div class="block mt-1 w-full rounded-md border-gray-300 bg-gray-100 px-3 py-2 text-gray-700">
+                            {{ $booking->room->name }} - {{ $booking->room->location }}
+                        </div>
+                        <input type="hidden" name="room_id" value="{{ $booking->room_id }}">
                         <x-partials.input-error :messages="$errors->get('room_id')" class="mt-2" />
                     </div>
 

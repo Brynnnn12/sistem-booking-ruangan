@@ -25,12 +25,22 @@ class BookingPolicy
 
     public function update(User $user, Booking $booking): bool
     {
-        return $user->hasRole('Admin') || $booking->canBeModifiedBy($user);
+        if ($user->hasRole('Admin')) {
+            return true; // Admin bisa update semua booking
+        }
+
+        // Staff hanya bisa update booking pending miliknya sendiri
+        return $booking->isOwnedBy($user) && $booking->status === Booking::STATUS_PENDING;
     }
 
     public function delete(User $user, Booking $booking): bool
     {
-        return $user->hasRole('Admin') || $booking->canBeModifiedBy($user);
+        if ($user->hasRole('Admin')) {
+            return true; // Admin bisa hapus semua booking
+        }
+
+        // Staff hanya bisa hapus booking pending miliknya sendiri
+        return $booking->isOwnedBy($user) && $booking->status === Booking::STATUS_PENDING;
     }
 
     public function approve(User $user, Booking $booking): bool
@@ -46,7 +56,11 @@ class BookingPolicy
     public function cancel(User $user, Booking $booking): bool
     {
         if ($user->hasRole('Admin')) {
-            return true;
+            // Admin hanya bisa cancel booking yang belum disetujui
+            return in_array($booking->status, [
+                Booking::STATUS_PENDING,
+                Booking::STATUS_REJECTED,
+            ]);
         }
 
         return $booking->isOwnedBy($user)

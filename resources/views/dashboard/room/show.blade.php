@@ -47,6 +47,18 @@
                                 </div>
 
                                 <div>
+                                    <label class="block text-sm font-medium text-gray-700">Image</label>
+                                    <p class="mt-1">
+                                        @if ($room->image)
+                                            <img src="{{ $room->image }}" alt="Room Image"
+                                                class="w-32 h-32 object-cover rounded">
+                                        @else
+                                            <span class="text-gray-500">No image</span>
+                                        @endif
+                                    </p>
+                                </div>
+
+                                <div>
                                     <label class="block text-sm font-medium text-gray-700">Created At</label>
                                     <p class="mt-1 text-sm text-gray-900">{{ $room->created_at->format('d M Y, H:i') }}
                                     </p>
