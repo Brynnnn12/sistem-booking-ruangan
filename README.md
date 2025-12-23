@@ -348,14 +348,14 @@ tests/
 
 ### Room Rules
 
-| Rule          | Validation                              |
-| ------------- | --------------------------------------- |
-| **Name**      | Required, max 255 characters, unique    |
-| **Location**  | Required, max 500 characters            |
-| **Capacity**  | Required, minimum 1 person              |
-| **Image**     | Optional, max 2MB, JPEG/PNG/JPG/GIF     |
-| **is_active** | Boolean, default true                   |
-| **Delete**    | Blocked if has active bookings          |
+| Rule          | Validation                           |
+| ------------- | ------------------------------------ |
+| **Name**      | Required, max 255 characters, unique |
+| **Location**  | Required, max 500 characters         |
+| **Capacity**  | Required, minimum 1 person           |
+| **Image**     | Optional, max 2MB, JPEG/PNG/JPG/GIF  |
+| **is_active** | Boolean, default true                |
+| **Delete**    | Blocked if has active bookings       |
 
 ### Conflict Detection Algorithm
 
@@ -614,13 +614,13 @@ php artisan test --verbose
 
 #### 1. Dashboard
 
--   **Admin Dashboard**: 
+-   **Admin Dashboard**:
     -   3 stat cards (Total Rooms, Total Users, Total Bookings)
     -   Dual bar charts side-by-side:
-        - Confirmed bookings (7 hari, hijau)
-        - Pending bookings (7 hari, orange)
+        -   Confirmed bookings (7 hari, hijau)
+        -   Pending bookings (7 hari, orange)
     -   Responsive grid layout
--   **Staff Dashboard**: 
+-   **Staff Dashboard**:
     -   Welcome banner dengan total booking counter
     -   Table riwayat booking (10 terakhir)
     -   Quick access ke create booking
