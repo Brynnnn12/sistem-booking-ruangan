@@ -6,7 +6,7 @@ use App\Http\Controllers\BookingController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
 
-Route::view('/', 'welcome')->name('home');
+Route::redirect('/', '/login');
 
 Route::middleware(['auth', 'verified'])
     ->prefix('dashboard')

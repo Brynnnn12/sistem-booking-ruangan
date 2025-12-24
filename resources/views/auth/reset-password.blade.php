@@ -1,40 +1,45 @@
 <x-guest-layout>
-    <form method="POST" action="{{ route('password.store') }}">
-        @csrf
-
-        <!-- Password Reset Token -->
-        <input type="hidden" name="token" value="{{ $request->route('token') }}">
-
-        <!-- Email Address -->
-        <div>
-            <x-partials.input-label for="email" :value="__('Email')" />
-            <x-partials.text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email', $request->email)"
-                required autofocus autocomplete="username" />
-            <x-partials.input-error :messages="$errors->get('email')" class="mt-2" />
+    <div class="space-y-6">
+        <div class="text-center space-y-2">
+            <p class="text-xs font-semibold uppercase tracking-[0.2em] text-indigo-600">Reset kata sandi</p>
+            <h1 class="text-2xl font-bold text-gray-900">Buat kata sandi baru</h1>
+            <p class="text-sm text-gray-500">Pastikan kombinasi kuat untuk keamanan akun Anda.</p>
         </div>
 
-        <!-- Password -->
-        <div class="mt-4">
-            <x-partials.input-label for="password" :value="__('Password')" />
-            <x-partials.text-input id="password" class="block mt-1 w-full" type="password" name="password" required
-                autocomplete="new-password" />
-            <x-partials.input-error :messages="$errors->get('password')" class="mt-2" />
-        </div>
+        <form method="POST" action="{{ route('password.store') }}" class="space-y-5">
+            @csrf
 
-        <!-- Confirm Password -->
-        <div class="mt-4">
-            <x-partials.input-label for="password_confirmation" :value="__('Confirm Password')" />
+            <input type="hidden" name="token" value="{{ $request->route('token') }}">
 
-            <x-partials.text-input id="password_confirmation" class="block mt-1 w-full" type="password"
-                name="password_confirmation" required autocomplete="new-password" />
+            <div class="space-y-1.5">
+                <x-partials.input-label for="email" :value="__('Email')" />
+                <x-partials.text-input id="email" class="block w-full" type="email" name="email"
+                    :value="old('email', $request->email)" required autofocus autocomplete="username" />
+                <x-partials.input-error :messages="$errors->get('email')" class="mt-1" />
+            </div>
 
-            <x-partials.input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
-        </div>
+            <div class="space-y-1.5">
+                <x-partials.input-label for="password" :value="__('Kata Sandi Baru')" />
+                <x-partials.text-input id="password" class="block w-full" type="password" name="password" required
+                    autocomplete="new-password" />
+                <x-partials.input-error :messages="$errors->get('password')" class="mt-1" />
+            </div>
 
-        <div class="flex items-center justify-end mt-4">
-            <x-partials.primary-button>
-                {{ __('Reset Password') }}
+            <div class="space-y-1.5">
+                <x-partials.input-label for="password_confirmation" :value="__('Konfirmasi Kata Sandi')" />
+                <x-partials.text-input id="password_confirmation" class="block w-full" type="password"
+                    name="password_confirmation" required autocomplete="new-password" />
+                <x-partials.input-error :messages="$errors->get('password_confirmation')" class="mt-1" />
+            </div>
+
+            <x-partials.primary-button class="w-full justify-center">
+                {{ __('Simpan kata sandi baru') }}
             </x-partials.primary-button>
+        </form>
+
+        <div class="text-center text-sm text-gray-600">
+            <a href="{{ route('login') }}" class="font-semibold text-indigo-600 hover:text-indigo-700">Kembali ke
+                masuk</a>
         </div>
-    </form>
+    </div>
 </x-guest-layout>

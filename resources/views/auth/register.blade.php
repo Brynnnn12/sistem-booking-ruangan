@@ -1,52 +1,15 @@
 <x-guest-layout>
-    <form method="POST" action="{{ route('register') }}">
-        @csrf
-
-        <!-- Name -->
-        <div>
-            <x-partials.input-label for="name" :value="__('Name')" />
-            <x-partials.text-input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name')"
-                required autofocus autocomplete="name" />
-            <x-partials.input-error :messages="$errors->get('name')" class="mt-2" />
+    <div class="space-y-6">
+        <div class="text-center space-y-2">
+            <p class="text-xs font-semibold uppercase tracking-[0.2em] text-indigo-600">Sistem Booking Ruangan</p>
+            <h1 class="text-2xl font-bold text-gray-900">Buat akun baru</h1>
+            <p class="text-sm text-gray-500">Daftar untuk mengelola permintaan booking dengan mudah.</p>
         </div>
-
-        <!-- Email Address -->
-        <div class="mt-4">
-            <x-partials.input-label for="email" :value="__('Email')" />
-            <x-partials.text-input id="email" class="block mt-1 w-full" type="email" name="email"
-                :value="old('email')" required autocomplete="username" />
-            <x-partials.input-error :messages="$errors->get('email')" class="mt-2" />
-        </div>
-
-        <!-- Password -->
-        <div class="mt-4">
-            <x-partials.input-label for="password" :value="__('Password')" />
-
-            <x-partials.text-input id="password" class="block mt-1 w-full" type="password" name="password" required
-                autocomplete="new-password" />
-
-            <x-partials.input-error :messages="$errors->get('password')" class="mt-2" />
-        </div>
-
-        <!-- Confirm Password -->
-        <div class="mt-4">
-            <x-partials.input-label for="password_confirmation" :value="__('Confirm Password')" />
-
-            <x-partials.text-input id="password_confirmation" class="block mt-1 w-full" type="password"
-                name="password_confirmation" required autocomplete="new-password" />
-
-            <x-partials.input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
-        </div>
-
-        <div class="flex items-center justify-end mt-4">
-            <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                href="{{ route('login') }}">
-                {{ __('Already registered?') }}
-            </a>
-
-            <x-partials.primary-button class="ms-4">
-                {{ __('Register') }}
-            </x-partials.primary-button>
-        </div>
-    </form>
-</x-guest-layout>
+        <x-guest-layout>
+            <div class="space-y-6 text-center">
+                <p class="text-xs font-semibold uppercase tracking-[0.2em] text-indigo-600">Akses dibuat oleh admin</p>
+                <h1 class="text-2xl font-bold text-gray-900">Registrasi ditutup</h1>
+                <p class="text-sm text-gray-500">Silakan hubungi admin untuk dibuatkan akun.</p>
+            </div>
+        </x-guest-layout>
+        :value="old('name')" required autofocus autocomplete="name" />
