@@ -33,9 +33,8 @@ class DashboardController extends Controller
                 $chartLabels[] = $date->format('M d');
 
                 $confirmed = Booking::whereDate('created_at', $formattedDate)
-                    ->where('status', 'confirmed')
+                    ->where('status', 'approved')
                     ->count();
-
                 $pending = Booking::whereDate('created_at', $formattedDate)
                     ->where('status', 'pending')
                     ->count();

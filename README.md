@@ -46,6 +46,7 @@ Aplikasi web yang menyediakan:
     -   **Admin**: Full access (CRUD rooms, approve/reject bookings, manage all data)
     -   **Staff**: Create & manage own bookings, view available rooms
 -   **Email Verification** - User harus verifikasi email sebelum akses dashboard
+-   **Admin-only Registration** - Akun baru dibuat oleh admin, registrasi publik dimatikan
 
 ### 🏢 Room Management
 
@@ -335,16 +336,17 @@ tests/
 
 ### Booking Rules
 
-| Rule                    | Implementation                                   | Validation               |
-| ----------------------- | ------------------------------------------------ | ------------------------ |
-| **No Overlapping**      | Query check approved bookings by date & time     | `hasOverlap()` method    |
-| **Status Flow**         | pending → approved/rejected/cancelled            | Enum validation          |
-| **Edit Permission**     | Only pending bookings editable by owner          | Policy check             |
-| **Delete Permission**   | Staff: own pending only, Admin: all              | BookingPolicy            |
-| **Cancel Permission**   | Staff: own pending, Admin: pending/rejected only | BookingPolicy            |
-| **Approval Permission** | Admin only, pending only                         | `approve()` & `reject()` |
-| **Room Lock on Edit**   | Cannot change room when editing booking          | Hidden input in form     |
-| **Booking Limit**       | Maximum 2 bookings per user per day              | Service validation       |
+| Rule                     | Implementation                                   | Validation               |
+| ------------------------ | ------------------------------------------------ | ------------------------ |
+| **No Overlapping**       | Query check approved bookings by date & time     | `hasOverlap()` method    |
+| **Status Flow**          | pending → approved/rejected/cancelled            | Enum validation          |
+| **Edit Permission**      | Only pending bookings editable by owner          | Policy check             |
+| **Delete Permission**    | Staff: own pending only, Admin: all              | BookingPolicy            |
+| **Cancel Permission**    | Staff: own pending, Admin: pending/rejected only | BookingPolicy            |
+| **Approval Permission**  | Admin only, pending only                         | `approve()` & `reject()` |
+| **Room Lock on Edit**    | Cannot change room when editing booking          | Hidden input in form     |
+| **Booking Limit**        | Maximum 2 bookings per user per day              | Service validation       |
+| **Active Session Limit** | Maximum 1 active booking per user at any time    | `hasActiveBooking()`     |
 
 ### Room Rules
 
@@ -448,6 +450,8 @@ php artisan db:seed
 -   **Admin**: admin@example.com / password
 -   **Staff**: staff@example.com / password
 
+**Catatan:** Registrasi publik dimatikan. Akun baru harus dibuat oleh admin melalui seeder atau manual.
+
 #### 6. Build Assets
 
 ```bash
@@ -539,13 +543,7 @@ php artisan test --verbose
 
 ### Web Routes (Protected by auth + verified middleware)
 
-#### Dashboard
-
----
-
-## 📱 API Endpoints
-
-### Web Routes (Protected by auth + verified middleware)
+**Catatan:** Root URL (`/`) redirect ke `/login`. Semua route dashboard memerlukan autentikasi dan verifikasi email.
 
 #### Dashboard
 
