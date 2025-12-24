@@ -25,8 +25,13 @@ class BookingPolicy
 
     public function update(User $user, Booking $booking): bool
     {
+        // Tidak bisa update booking yang sudah approved
+        if ($booking->status === Booking::STATUS_APPROVED) {
+            return false;
+        }
+
         if ($user->hasRole('Admin')) {
-            return true; // Admin bisa update semua booking
+            return true; // Admin bisa update pending booking
         }
 
         // Staff hanya bisa update booking pending miliknya sendiri

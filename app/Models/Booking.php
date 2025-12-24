@@ -97,4 +97,11 @@ class Booking extends Model
     {
         return $this->isOwnedBy($user) && $this->isPending();
     }
+
+    public function isActiveApproved(): bool
+    {
+        return $this->status === self::STATUS_APPROVED &&
+            ($this->booking_date->isFuture() ||
+                ($this->booking_date->isToday() && now()->format('H:i') < $this->end_time));
+    }
 }

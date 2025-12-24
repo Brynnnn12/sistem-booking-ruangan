@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Room;
 use App\Services\RoomService;
-use App\Repositories\RoomRepository;
 use App\Http\Requests\Room\StoreRoomRequest;
 use App\Http\Requests\Room\UpdateRoomRequest;
 use Illuminate\Http\Request;
@@ -12,15 +11,14 @@ use Illuminate\Http\Request;
 class RoomController extends Controller
 {
     public function __construct(
-        protected RoomService $roomService,
-        protected RoomRepository $roomRepository
+        protected RoomService $roomService
     ) {
         $this->authorizeResource(Room::class, 'room');
     }
 
     public function index(Request $request)
     {
-        $rooms = $this->roomRepository->paginate(
+        $rooms = $this->roomService->getPaginated(
             10,
             $request->only(['search', 'is_active'])
         );

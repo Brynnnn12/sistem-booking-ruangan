@@ -25,6 +25,6 @@
             implode('', array_map(fn($message) => '<li>' . e($message) . '</li>', $errors->all())) .
             '</ul>';
     @endphp
-    <x-ui.sweet-alert type="error" title="Validasi" text="{{ $errorListHtml }}" :html="true" :show-on-load="true"
-        timer="5000" position="top-end" toast="true" width="350px" />
+    <x-ui.sweet-alert type="error" title="Kesalahan" text="{!! $errorListHtml !!}" :html="true"
+        :show-on-load="true" timer="5000" position="top-end" toast="true" width="350px" />
 @endif

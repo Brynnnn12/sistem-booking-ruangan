@@ -121,15 +121,17 @@
                                 </form>
                             @endcan
                             @can('delete', $booking)
-                                <form action="{{ route('dashboard.bookings.destroy', $booking) }}" method="POST"
-                                    class="inline">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="text-red-600 hover:text-red-900"
-                                        onclick="return confirm('Yakin ingin menghapus booking ini?')">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </form>
+                                @if (!$booking->isActiveApproved())
+                                    <form action="{{ route('dashboard.bookings.destroy', $booking) }}" method="POST"
+                                        class="inline">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="text-red-600 hover:text-red-900"
+                                            onclick="return confirm('Yakin ingin menghapus booking ini?')">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
+                                @endif
                             @endcan
                         </td>
                     </tr>

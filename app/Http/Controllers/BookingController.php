@@ -6,17 +6,13 @@ use App\Models\Booking;
 use App\Http\Requests\Booking\StoreBookingRequest;
 use App\Http\Requests\Booking\UpdateBookingRequest;
 use App\Services\BookingService;
-use App\Repositories\BookingRepository;
-use App\Repositories\RoomRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class BookingController extends Controller
 {
     public function __construct(
-        protected BookingService $service,
-        protected BookingRepository $repository,
-        protected RoomRepository $roomRepository
+        protected BookingService $service
     ) {}
 
     public function index(Request $request)
@@ -29,7 +25,7 @@ class BookingController extends Controller
             $filters['user_id'] = $request->user()->id;
         }
 
-        $bookings = $this->repository->paginate(10, $filters);
+        $bookings = $this->service->getPaginated(10, $filters);
 
         return view('dashboard.booking.index', compact('bookings'));
     }
@@ -38,7 +34,7 @@ class BookingController extends Controller
     {
         $this->authorize('create', Booking::class);
 
-        $rooms = $this->roomRepository->getActive();
+        $rooms = $this->service->getActiveRooms();
 
         return view('dashboard.booking.create', compact('rooms'));
     }
@@ -68,7 +64,7 @@ class BookingController extends Controller
     {
         $this->authorize('update', $booking);
 
-        $rooms = $this->roomRepository->getActive();
+        $rooms = $this->service->getActiveRooms();
 
         return view('dashboard.booking.edit', compact('booking', 'rooms'));
     }

@@ -49,4 +49,9 @@ class RoomRepository
     {
         return $this->model->active()->get();
     }
+
+    public function isActive(int $id): bool
+    {
+        return $this->model->where('id', $id)->active()->exists();
+    }
 }
