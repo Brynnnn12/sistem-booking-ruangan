@@ -22,11 +22,11 @@ class StoreRoomRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|max:255|unique:rooms,name',
-            'location' => 'required|string|max:500',
-            'capacity' => 'required|integer|min:1',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'is_active' => 'required|boolean',
+            'name' => ['required', 'string', 'max:255', 'unique:rooms,name', 'regex:/^[^<>\"\';]*$/'], // Prevent XSS
+            'location' => ['required', 'string', 'max:500', 'regex:/^[^<>\"\';]*$/'], // Prevent XSS
+            'capacity' => ['required', 'integer', 'min:1', 'max:1000'],
+            'image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048', 'dimensions:min_width=100,min_height=100,max_width=2000,max_height=2000'],
+            'is_active' => ['required', 'boolean'],
         ];
     }
 
@@ -37,21 +37,24 @@ class StoreRoomRequest extends FormRequest
      */
     public function messages(): array
     {
-        //pakai bahasa indonesia
         return [
             'name.required' => 'Nama ruangan wajib diisi.',
             'name.string' => 'Nama ruangan harus berupa teks.',
             'name.max' => 'Nama ruangan maksimal :max karakter.',
             'name.unique' => 'Nama ruangan sudah digunakan.',
+            'name.regex' => 'Nama ruangan mengandung karakter yang tidak diizinkan.',
             'location.required' => 'Lokasi ruangan wajib diisi.',
             'location.string' => 'Lokasi ruangan harus berupa teks.',
             'location.max' => 'Lokasi ruangan maksimal :max karakter.',
+            'location.regex' => 'Lokasi ruangan mengandung karakter yang tidak diizinkan.',
             'capacity.required' => 'Kapasitas ruangan wajib diisi.',
             'capacity.integer' => 'Kapasitas ruangan harus berupa angka.',
             'capacity.min' => 'Kapasitas ruangan minimal :min.',
+            'capacity.max' => 'Kapasitas ruangan maksimal :max.',
             'image.image' => 'File harus berupa gambar.',
             'image.mimes' => 'Gambar harus berformat jpeg, png, jpg, atau gif.',
             'image.max' => 'Ukuran gambar maksimal 2MB.',
+            'image.dimensions' => 'Dimensi gambar harus antara 100x100 hingga 2000x2000 piksel.',
             'is_active.boolean' => 'Status aktif harus berupa nilai benar atau salah.',
         ];
     }

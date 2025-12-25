@@ -1,17 +1,13 @@
 <x-error-layout>
-    <h1 class="text-6xl md:text-[300px] w-full select-none text-center font-black text-gray-400">
+    <h1 class="w-full select-none text-center text-6xl sm:text-7xl md:text-8xl font-black leading-none text-gray-400">
         503</h1>
-    <p class="text-xl font-bold capitalize">Layanan Tidak Tersedia</p>
-    <p class="text-lg font-medium break-words text-gray-500">Sistem sedang dalam pemeliharaan. Silakan coba beberapa
+    <p class="text-center text-xl font-bold capitalize">Layanan Tidak Tersedia</p>
+    <p class="mx-auto max-w-2xl text-center text-base sm:text-lg font-medium break-words text-gray-500">Sistem sedang
+        dalam pemeliharaan. Silakan coba beberapa
         saat lagi.</p>
-    <div class="flex flex-col justify-between w-full gap-4 md:flex-row md:gap-8 xl:px-8">
-        <a href="{{ url()->previous() }}"
-            class="flex items-center justify-center w-full gap-3 p-3 font-semibold capitalize border-2 border-blue-500 rounded shadow-lg md:w-fit hover:bg-blue-500 md:p-4 focus:outline-none hover:scale-105 active:scale-90 hover:shadow-xl transition-all">
-            <span class="rotate-180 material-symbols-outlined">arrow_right_alt</span>
-            Kembali ke Halaman Sebelumnya
-        </a>
+    <div class="flex w-full justify-center">
         <a href="{{ route('dashboard.index') }}"
-            class="rounded flex w-full md:w-fit group items-center gap-3 justify-center border-2 border-green-500 font-semibold hover:bg-green-500 p-3 md:p-4 capitalize focus:outline-none hover:scale-105 active:scale-90 shadow-lg hover:shadow-xl transition-all">
+            class="rounded flex w-full sm:w-fit group items-center gap-3 justify-center border-2 border-green-500 font-semibold hover:bg-green-500 px-4 py-3 sm:px-6 sm:py-3 capitalize focus:outline-none hover:scale-105 active:scale-90 shadow-lg hover:shadow-xl transition-all">
             <span class="material-symbols-outlined">home</span>
             Kembali ke Dashboard
         </a>

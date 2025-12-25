@@ -1,120 +1,126 @@
 <x-app-layout>
 
-    <div class="flex items-center justify-between">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            Daftar Ruangan
-        </h2>
-        <div>
+    <div class="space-y-6">
+        <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <h2 class="text-xl font-semibold leading-tight text-gray-900">Daftar Ruangan</h2>
             <a href="{{ route('dashboard.rooms.create') }}"
-                class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-500 focus:outline-none focus:border-blue-700 focus:ring focus:ring-blue-200 active:bg-blue-600 disabled:opacity-25 transition">
+                class="inline-flex w-full items-center justify-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-semibold text-gray-700 shadow-sm transition hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-300 sm:w-fit">
+                <i class="fas fa-plus mr-2 text-xs"></i>
                 Tambah Ruangan
             </a>
-
         </div>
-    </div>
 
-    <!-- Search and Filter -->
-    <div class="mt-6 bg-white p-4 rounded-lg shadow">
-        <form method="GET" action="{{ route('dashboard.rooms.index') }}" class="flex flex-wrap gap-4">
-            <div class="flex-1 min-w-64">
-                <label for="search" class="block text-sm font-medium text-gray-700">Search</label>
-                <input type="text" name="search" id="search" value="{{ request('search') }}"
-                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                    placeholder="Search by name or location...">
+        <!-- Search and Filter -->
+        <div class="rounded-xl border border-gray-200 bg-white p-4 shadow-sm sm:p-6">
+            <form method="GET" action="{{ route('dashboard.rooms.index') }}"
+                class="grid grid-cols-1 gap-4 sm:grid-cols-6">
+                <div class="sm:col-span-4">
+                    <label for="search" class="block text-sm font-medium text-gray-700">Search</label>
+                    <input type="text" name="search" id="search" value="{{ request('search') }}"
+                        class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-gray-400 focus:ring-gray-300"
+                        placeholder="Search by name or location...">
+                </div>
+
+                <div class="sm:col-span-2">
+                    <label for="is_active" class="block text-sm font-medium text-gray-700">Status</label>
+                    <select name="is_active" id="is_active"
+                        class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-gray-400 focus:ring-gray-300">
+                        <option value="">All</option>
+                        <option value="1" {{ request('is_active') === '1' ? 'selected' : '' }}>Active</option>
+                        <option value="0" {{ request('is_active') === '0' ? 'selected' : '' }}>Inactive</option>
+                    </select>
+                </div>
+
+                <div class="sm:col-span-6 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-end">
+                    <button type="submit"
+                        class="inline-flex w-full items-center justify-center rounded-lg bg-gray-900 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-300 sm:w-fit">
+                        <i class="fas fa-search mr-2 text-xs"></i>Search
+                    </button>
+                    <a href="{{ route('dashboard.rooms.index') }}"
+                        class="inline-flex w-full items-center justify-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-semibold text-gray-700 shadow-sm transition hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-300 sm:w-fit">
+                        <i class="fas fa-times mr-2 text-xs"></i>Clear
+                    </a>
+                </div>
+            </form>
+        </div>
+
+        <div class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50 ltr:text-left rtl:text-right">
+                        <tr class="*:font-medium *:text-gray-900">
+                            <th class="px-4 py-3 text-xs uppercase tracking-wider text-gray-500 sm:px-6">Nama</th>
+                            <th class="px-4 py-3 text-xs uppercase tracking-wider text-gray-500 sm:px-6">Gambar</th>
+                            <th class="px-4 py-3 text-xs uppercase tracking-wider text-gray-500 sm:px-6">Lokasi</th>
+                            <th class="px-4 py-3 text-xs uppercase tracking-wider text-gray-500 sm:px-6">Kapasitas</th>
+                            <th class="px-4 py-3 text-xs uppercase tracking-wider text-gray-500 sm:px-6">Status</th>
+                            <th class="px-4 py-3 text-xs uppercase tracking-wider text-gray-500 sm:px-6">Aksi</th>
+                        </tr>
+                    </thead>
+
+                    <tbody class="divide-y divide-gray-200 bg-white">
+                        @forelse ($rooms as $room)
+                            <tr class="*:text-gray-900">
+                                <td class="px-4 py-3 whitespace-nowrap text-sm font-medium sm:px-6">{{ $room->name }}
+                                </td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm sm:px-6">
+                                    @if ($room->image)
+                                        <img src="{{ $room->image }}" alt="Room Image"
+                                            class="h-12 w-12 rounded-lg object-cover">
+                                    @else
+                                        <span class="text-sm text-gray-500">No image</span>
+                                    @endif
+                                </td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-600 sm:px-6">
+                                    {{ $room->location }}</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-600 sm:px-6">
+                                    {{ $room->capacity }}</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm sm:px-6">
+                                    @if ($room->is_active)
+                                        <span
+                                            class="inline-flex rounded-full bg-green-100 px-2 py-1 text-xs font-semibold text-green-800">Active</span>
+                                    @else
+                                        <span
+                                            class="inline-flex rounded-full bg-red-100 px-2 py-1 text-xs font-semibold text-red-800">Inactive</span>
+                                    @endif
+                                </td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm sm:px-6">
+                                    <div class="flex items-center gap-3">
+                                        <a href="{{ route('dashboard.rooms.show', $room) }}"
+                                            class="text-gray-600 transition hover:text-gray-900" aria-label="Lihat">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <a href="{{ route('dashboard.rooms.edit', $room) }}"
+                                            class="text-gray-600 transition hover:text-gray-900" aria-label="Edit">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <form action="{{ route('dashboard.rooms.destroy', $room) }}" method="POST"
+                                            class="inline">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="text-red-600 transition hover:text-red-800"
+                                                onclick="return confirm('Are you sure you want to delete this room?')"
+                                                aria-label="Hapus">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="6" class="px-4 py-8 text-center text-sm text-gray-500 sm:px-6">
+                                    Tidak Ada Ruangan Yang Tersedia.
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
             </div>
 
-            <div class="min-w-32">
-                <label for="is_active" class="block text-sm font-medium text-gray-700">Status</label>
-                <select name="is_active" id="is_active"
-                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                    <option value="">All</option>
-                    <option value="1" {{ request('is_active') === '1' ? 'selected' : '' }}>Active</option>
-                    <option value="0" {{ request('is_active') === '0' ? 'selected' : '' }}>Inactive</option>
-                </select>
+            <div class="border-t border-gray-200 px-4 py-3 sm:px-6">
+                {{ $rooms->withQueryString()->links() }}
             </div>
-
-            <div class="flex items-end">
-                <button type="submit"
-                    class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    <i class="fas fa-search mr-2"></i>Search
-                </button>
-                <a href="{{ route('dashboard.rooms.index') }}"
-                    class="ml-2 px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500">
-                    <i class="fas fa-times mr-2"></i>Clear
-                </a>
-            </div>
-        </form>
-    </div>
-
-
-    <div class="max-h-46 overflow-x-auto py-12">
-        <table class="min-w-full divide-y-2 divide-gray-200">
-            <thead class="sticky top-0 bg-white ltr:text-left rtl:text-right">
-                <tr class="*:font-medium *:text-gray-900">
-                    <th class="px-3 py-2 whitespace-nowrap">Nama</th>
-                    <th class="px-3 py-2 whitespace-nowrap">Gambar</th>
-                    <th class="px-3 py-2 whitespace-nowrap">Lokasi</th>
-                    <th class="px-3 py-2 whitespace-nowrap">Kapasitas</th>
-                    <th class="px-3 py-2 whitespace-nowrap">Status Aktif</th>
-                    <th class="px-3 py-2 whitespace-nowrap">Aksi</th>
-                </tr>
-            </thead>
-
-            <tbody class="divide-y divide-gray-200">
-                @forelse ($rooms as $room)
-                    <tr class="*:text-gray-900 *:first:font-medium">
-                        <td class="px-3 py-2 whitespace-nowrap">{{ $room->name }}</td>
-                        <td class="px-3 py-2 whitespace-nowrap">
-                            @if ($room->image)
-                                <img src="{{ $room->image }}" alt="Room Image" class="w-16 h-16 object-cover rounded">
-                            @else
-                                <span class="text-gray-500">No image</span>
-                            @endif
-                        </td>
-                        <td class="px-3 py-2 whitespace-nowrap">{{ $room->location }}</td>
-                        <td class="px-3 py-2 whitespace-nowrap">{{ $room->capacity }}</td>
-                        <td class="px-3 py-2 whitespace-nowrap">
-                            @if ($room->is_active)
-                                <span
-                                    class="px-2 py-1 text-sm font-semibold text-green-800 bg-green-100 rounded-full">Active</span>
-                            @else
-                                <span
-                                    class="px-2 py-1 text-sm font-semibold text-red-800 bg-red-100 rounded-full">Inactive</span>
-                            @endif
-                        </td>
-                        <td class="px-3 py-2 whitespace-nowrap space-x-2">
-                            <a href="{{ route('dashboard.rooms.show', $room) }}"
-                                class="text-green-600 hover:text-green-900 mr-2">
-                                <i class="fas fa-eye"></i>
-                            </a>
-                            <a href="{{ route('dashboard.rooms.edit', $room) }}"
-                                class="text-blue-600 hover:text-blue-900 mr-2">
-                                <i class="fas fa-edit"></i>
-                            </a>
-
-                            <form action="{{ route('dashboard.rooms.destroy', $room) }}" method="POST" class="inline">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="text-red-600 hover:text-red-900"
-                                    onclick="return confirm('Are you sure you want to delete this room?')">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </form>
-                        </td>
-                    </tr>
-                @empty
-                    <tr>
-                        <td colspan="6" class="px-3 py-2 text-center text-gray-500">
-                            Tidak Ada Ruangan Yang Tersedia.
-                        </td>
-                    </tr>
-                @endforelse
-
-            </tbody>
-        </table>
-
-        <div class="mt-4">
-            {{ $rooms->withQueryString()->links() }} <!-- Pagination with query strings -->
         </div>
     </div>
 </x-app-layout>
