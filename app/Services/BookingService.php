@@ -27,15 +27,18 @@ class BookingService
     public function create(array $data): Booking
     {
         return DB::transaction(function () use ($data) {
-            // Validasi maksimal 2 booking per hari
-            $userBookingCount = $this->bookingRepository->getUserBookingCountForDate(
+            // Validasi batasan user (kuota + sesi aktif)
+            $this->validateUserLimits(
                 $data['user_id'],
-                $data['booking_date']
+                $data['booking_date'],
+                $data['start_time'],
+                $data['end_time']
             );
 
-            if ($userBookingCount >= 2) {
+            // Validasi ruangan aktif
+            if (!$this->roomRepository->isActive($data['room_id'])) {
                 throw \Illuminate\Validation\ValidationException::withMessages([
-                    'booking_date' => 'Anda sudah mencapai batas maksimal 2 booking per hari pada tanggal tersebut.',
+                    'room_id' => 'Ruangan tidak aktif.',
                 ]);
             }
 
@@ -55,19 +58,29 @@ class BookingService
     public function update(Booking $booking, array $data): bool
     {
         return DB::transaction(function () use ($booking, $data) {
-            // Validasi maksimal 2 booking per hari jika tanggal berubah
+            // Jika booking sudah approved dan sudah dimulai, tidak boleh update
+            if ($booking->isApproved() && $booking->booking_date->isToday() && now()->format('H:i:s') >= $booking->start_time) {
+                throw \Illuminate\Validation\ValidationException::withMessages([
+                    'booking' => 'Booking yang sudah dimulai tidak dapat diubah.',
+                ]);
+            }
+
+            // Validasi batasan user HANYA jika tanggal berubah (untuk efisiensi)
             if (array_key_exists('booking_date', $data) && $data['booking_date'] !== $booking->booking_date->format('Y-m-d')) {
-                $userBookingCount = $this->bookingRepository->getUserBookingCountForDate(
+                $this->validateUserLimits(
                     $booking->user_id,
                     $data['booking_date'],
-                    $booking->id
+                    $data['start_time'] ?? $booking->start_time,
+                    $data['end_time'] ?? $booking->end_time,
+                    $booking->id  // Exclude ID agar tidak dihitung sendiri
                 );
+            }
 
-                if ($userBookingCount >= 2) {
-                    throw \Illuminate\Validation\ValidationException::withMessages([
-                        'booking_date' => 'Anda sudah mencapai batas maksimal 2 booking per hari pada tanggal tersebut.',
-                    ]);
-                }
+            // Validasi ruangan aktif jika room_id berubah
+            if (array_key_exists('room_id', $data) && !$this->roomRepository->isActive($data['room_id'])) {
+                throw \Illuminate\Validation\ValidationException::withMessages([
+                    'room_id' => 'Ruangan tidak aktif.',
+                ]);
             }
 
             if ($this->isScheduleChanging($data)) {
@@ -159,5 +172,33 @@ class BookingService
             || array_key_exists('booking_date', $data)
             || array_key_exists('start_time', $data)
             || array_key_exists('end_time', $data);
+    }
+
+    private function validateUserLimits(int $userId, string $bookingDate, string $startTime, string $endTime, ?int $excludeId = null): void
+    {
+        $currentTime = now()->format('H:i:s');  // Gunakan now() untuk pengecekan akurat
+        $today = now()->toDateString();
+
+        // Cek booking tidak di masa lalu
+        if ($bookingDate < $today || ($bookingDate === $today && $startTime <= $currentTime)) {
+            throw \Illuminate\Validation\ValidationException::withMessages([
+                'booking_date' => 'Tidak dapat booking untuk waktu yang sudah lewat.',
+            ]);
+        }
+
+        // 1. Cek kuota: Maksimal 2 booking per hari (pending/approved)
+        $userBookingCount = $this->bookingRepository->getUserBookingCountForDate($userId, $bookingDate, $excludeId);
+        if ($userBookingCount >= 2) {
+            throw \Illuminate\Validation\ValidationException::withMessages([
+                'booking_date' => 'Anda sudah mencapai batas maksimal 2 booking per hari pada tanggal tersebut.',
+            ]);
+        }
+
+        // 2. Cek sesi aktif: Tidak boleh booking jika sudah ada sesi aktif (approved dan belum selesai) - berlaku untuk semua user
+        if ($this->bookingRepository->hasActiveBooking($userId, $currentTime, $today)) {
+            throw \Illuminate\Validation\ValidationException::withMessages([
+                'booking' => 'Anda sudah memiliki booking aktif. Tunggu hingga sesi selesai.',
+            ]);
+        }
     }
 }

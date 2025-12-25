@@ -24,8 +24,8 @@ class StoreBookingRequest extends FormRequest
         return [
             'room_id'       => ['required', 'exists:rooms,id'],
             'booking_date'  => ['required', 'date', 'after_or_equal:today'],
-            'start_time'    => ['required', 'date_format:H:i', 'after_or_equal:07:00', 'before_or_equal:22:00'],
-            'end_time'      => ['required', 'date_format:H:i', 'after:start_time', 'after_or_equal:08:00', 'before_or_equal:23:00'],
+            'start_time'    => ['required', 'date_format:H:i', 'after_or_equal:07:00', 'before_or_equal:16:00'],
+            'end_time'      => ['required', 'date_format:H:i', 'after:start_time', 'after_or_equal:08:00', 'before_or_equal:17:00'],
             'note'          => ['nullable', 'string', 'max:1000'],
         ];
     }
@@ -44,12 +44,12 @@ class StoreBookingRequest extends FormRequest
             'start_time.required'       => 'Jam mulai wajib diisi.',
             'start_time.date_format'    => 'Format jam mulai tidak valid (HH:MM).',
             'start_time.after_or_equal' => 'Jam mulai minimal 07:00.',
-            'start_time.before_or_equal' => 'Jam mulai maksimal 22:00.',
+            'start_time.before_or_equal' => 'Jam mulai maksimal 16:00.',
             'end_time.required'         => 'Jam selesai wajib diisi.',
             'end_time.date_format'      => 'Format jam selesai tidak valid (HH:MM).',
             'end_time.after'            => 'Jam selesai harus setelah jam mulai.',
             'end_time.after_or_equal'   => 'Jam selesai minimal 08:00.',
-            'end_time.before_or_equal'  => 'Jam selesai maksimal 23:00.',
+            'end_time.before_or_equal'  => 'Jam selesai maksimal 17:00.',
             'note.max'                  => 'Catatan maksimal 1000 karakter.',
         ];
     }

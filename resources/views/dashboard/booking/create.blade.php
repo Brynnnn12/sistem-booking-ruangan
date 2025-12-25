@@ -112,7 +112,7 @@
                                                 class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                                                 required>
                                                 <option value="">Pilih Jam Mulai</option>
-                                                @for ($hour = 7; $hour <= 22; $hour++)
+                                                @for ($hour = 7; $hour <= 16; $hour++)
                                                     <option value="{{ sprintf('%02d:00', $hour) }}"
                                                         {{ old('start_time') == sprintf('%02d:00', $hour) ? 'selected' : '' }}>
                                                         {{ sprintf('%02d:00', $hour) }}
@@ -122,7 +122,7 @@
                                             @error('start_time')
                                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                             @enderror
-                                            <p class="mt-1 text-xs text-gray-500">Jam operasional: 07:00 - 22:00</p>
+                                            <p class="mt-1 text-xs text-gray-500">Jam operasional: 07:00 - 17:00</p>
                                         </div>
 
                                         <!-- End Time -->
@@ -135,7 +135,7 @@
                                                 class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                                                 required>
                                                 <option value="">Pilih Jam Selesai</option>
-                                                @for ($hour = 8; $hour <= 23; $hour++)
+                                                @for ($hour = 8; $hour <= 17; $hour++)
                                                     <option value="{{ sprintf('%02d:00', $hour) }}"
                                                         {{ old('end_time') == sprintf('%02d:00', $hour) ? 'selected' : '' }}>
                                                         {{ sprintf('%02d:00', $hour) }}

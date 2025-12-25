@@ -14,7 +14,6 @@ class BookingRepository
 
     public function baseQuery(): Builder
     {
-        // Selalu gunakan Eager Loading untuk menghindari N+1 Query
         return $this->model->newQuery()->with(['room', 'user', 'approvedBy']);
     }
 
@@ -75,7 +74,7 @@ class BookingRepository
         $query = $this->model->newQuery()
             ->where('room_id', $roomId)
             ->where('booking_date', $bookingDate)
-            ->where('status', Booking::STATUS_APPROVED)
+            ->whereNotIn('status', [Booking::STATUS_REJECTED, Booking::STATUS_CANCELLED])
             ->where(function ($q) use ($startTime, $endTime) {
                 $q->whereBetween('start_time', [$startTime, $endTime])
                     ->orWhereBetween('end_time', [$startTime, $endTime])
@@ -107,5 +106,23 @@ class BookingRepository
         }
 
         return $query->count();
+    }
+
+    /**
+     * Cek apakah user sudah punya booking aktif (approved dan belum selesai) secara global
+     */
+    public function hasActiveBooking(int $userId, string $currentTime, string $today): bool
+    {
+        return $this->model->newQuery()
+            ->where('user_id', $userId)
+            ->where('status', Booking::STATUS_APPROVED)
+            ->where(function ($q) use ($currentTime, $today) {
+                $q->where('booking_date', '>', $today)
+                    ->orWhere(function ($sub) use ($currentTime, $today) {
+                        $sub->where('booking_date', $today)
+                            ->where('end_time', '>', $currentTime);
+                    });
+            })
+            ->exists();
     }
 }
