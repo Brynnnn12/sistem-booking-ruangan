@@ -205,11 +205,11 @@ updated_at  TIMESTAMP
 
 ```sql
 id          BIGINT (PK, Auto Increment)
-name        VARCHAR(255)              -- Nama ruangan
-location    VARCHAR(255)              -- Lokasi/lantai
-capacity    INTEGER                   -- Kapasitas orang
-image       VARCHAR(255) NULLABLE     -- Path gambar ruangan
-is_active   BOOLEAN DEFAULT TRUE      -- Status aktif
+name        VARCHAR(30)              -- Nama ruangan (max 30 chars)
+location    VARCHAR(255)             -- Lokasi/lantai
+capacity    INTEGER                  -- Kapasitas orang
+image       VARCHAR(255) NULLABLE    -- Path gambar ruangan
+is_active   BOOLEAN DEFAULT TRUE     -- Status aktif
 created_at  TIMESTAMP
 updated_at  TIMESTAMP
 ```
@@ -347,17 +347,21 @@ tests/
 | **Room Lock on Edit**    | Cannot change room when editing booking          | Hidden input in form     |
 | **Booking Limit**        | Maximum 2 bookings per user per day              | Service validation       |
 | **Active Session Limit** | Maximum 1 active booking per user at any time    | `hasActiveBooking()`     |
+| **No Past Booking**      | Cannot book for past dates/times                 | Service validation       |
+| **No Edit Active**       | Cannot edit booking that has started             | Service validation       |
+| **No Cancel Active**     | Cannot cancel booking that is in progress        | Service validation       |
+| **No Delete Future**     | Cannot delete approved future bookings           | Service validation       |
 
 ### Room Rules
 
-| Rule          | Validation                           |
-| ------------- | ------------------------------------ |
-| **Name**      | Required, max 255 characters, unique |
-| **Location**  | Required, max 500 characters         |
-| **Capacity**  | Required, minimum 1 person           |
-| **Image**     | Optional, max 2MB, JPEG/PNG/JPG/GIF  |
-| **is_active** | Boolean, default true                |
-| **Delete**    | Blocked if has active bookings       |
+| Rule          | Validation                          |
+| ------------- | ----------------------------------- |
+| **Name**      | Required, max 30 characters, unique |
+| **Location**  | Required, max 500 characters        |
+| **Capacity**  | Required, minimum 1 person          |
+| **Image**     | Optional, max 2MB, JPEG/PNG/JPG/GIF |
+| **is_active** | Boolean, default true               |
+| **Delete**    | Blocked if has active bookings      |
 
 ### Conflict Detection Algorithm
 
@@ -491,7 +495,7 @@ php artisan test --coverage
 
 ### Test Coverage
 
-#### Booking Tests (12 test cases) ✅
+#### Booking Tests (16 test cases) ✅
 
 ```bash
 ✓ Staff bisa melihat booking miliknya
@@ -501,11 +505,15 @@ php artisan test --coverage
 ✓ User tanpa role tidak bisa membuat booking
 ✓ Staff bisa update booking pending miliknya
 ✓ Staff tidak bisa update booking approved
+✓ Admin tidak bisa update booking approved
 ✓ Staff bisa hapus booking pending miliknya
 ✓ Admin bisa approve booking pending
 ✓ Admin bisa reject booking pending
 ✓ Staff bisa cancel booking pending miliknya
 ✓ Staff tidak bisa cancel booking approved
+✓ Tidak bisa buat booking overlap
+✓ Tidak bisa buat lebih dari 2 booking per hari
+✓ Staff tidak bisa hapus booking approved
 ```
 
 #### Room Tests (9 test cases) ✅
@@ -521,6 +529,8 @@ php artisan test --coverage
 ✓ Staff tidak bisa create room
 ✓ Staff tidak bisa edit/delete room
 ```
+
+**Total: 25 test cases**
 
 ### Running Tests
 
@@ -539,9 +549,9 @@ php artisan test --verbose
 
 ---
 
-## 📱 API Endpoints
+## 📱 Web Routes
 
-### Web Routes (Protected by auth + verified middleware)
+### Authentication Required Routes (Protected by auth + verified middleware)
 
 **Catatan:** Root URL (`/`) redirect ke `/login`. Semua route dashboard memerlukan autentikasi dan verifikasi email.
 
@@ -591,7 +601,7 @@ php artisan test --verbose
 | PATCH  | `/dashboard/bookings/{booking}/reject`  | dashboard.bookings.reject  | Admin                     |
 | PATCH  | `/dashboard/bookings/{booking}/cancel`  | dashboard.bookings.cancel  | Owner (if pending), Admin |
 
-#### API Endpoints (AJAX)
+#### AJAX Endpoints (for real-time features)
 
 | Method | URI                                                    | Purpose                            |
 | ------ | ------------------------------------------------------ | ---------------------------------- |
@@ -885,7 +895,9 @@ docker-compose -f docker-compose.prod.yml up -d
 3. Klik **Cancel**
 4. Confirmation dialog → Konfirmasi
 5. Status berubah ke Cancelled
-6. **Note**: Booking yang sudah **Approved** tidak bisa di-cancel (business rule)
+6. **Note**:
+    - Booking yang sudah **Approved** tidak bisa di-cancel (business rule)
+    - Booking yang sedang berlangsung tidak bisa di-cancel
 
 #### 4. Monitoring & Reports
 
@@ -902,7 +914,7 @@ docker-compose -f docker-compose.prod.yml up -d
 
 1. Login sebagai Staff
 2. Sidebar → **Create Booking**
-3. Pilih **tanggal booking** (date picker)
+3. Pilih **tanggal booking** (date picker, minimal hari ini)
 4. Pilih **jam mulai** dari dropdown (07:00-22:00)
 5. Pilih **jam selesai** dari dropdown (08:00-23:00)
 6. Sistem menampilkan ruangan available dengan gambar
@@ -910,6 +922,10 @@ docker-compose -f docker-compose.prod.yml up -d
 8. Modal muncul → Isi **catatan** (optional)
 9. **Buat Booking** → Status: Pending
 10. Tunggu admin approve
+11. **Batasan**:
+    - Maksimal 2 booking per hari per user
+    - Tidak boleh booking jika sudah ada sesi aktif (approved dan belum selesai)
+    - Tidak bisa booking untuk waktu yang sudah lewat
 
 #### 2. Lihat Booking Saya
 
@@ -925,7 +941,10 @@ docker-compose -f docker-compose.prod.yml up -d
 4. Ubah tanggal/waktu/catatan
 5. Sistem cek conflict otomatis
 6. **Save** jika tidak ada conflict
-7. **Note**: Hanya booking pending yang bisa diedit
+7. **Note**:
+    - Hanya booking pending yang bisa diedit
+    - Tidak bisa edit booking yang sudah dimulai (approved dan waktu sudah lewat)
+    - Tidak bisa booking untuk waktu yang sudah lewat
 
 #### 4. Cancel Booking (Jika Pending)
 
@@ -934,7 +953,10 @@ docker-compose -f docker-compose.prod.yml up -d
 3. Confirmation dialog → Konfirmasi
 4. Status berubah ke Cancelled
 5. Ruangan available lagi untuk user lain
-6. **Note**: Booking approved/rejected tidak bisa di-cancel oleh staff
+6. **Note**:
+    - Staff hanya bisa cancel booking pending miliknya
+    - Tidak bisa cancel booking yang sudah approved
+    - Tidak bisa cancel booking yang sedang berlangsung (approved dan waktu sudah dimulai)
 
 ---
 
@@ -1010,6 +1032,19 @@ Pastikan `.env.testing` configured:
 DB_CONNECTION=sqlite
 DB_DATABASE=:memory:
 ```
+
+#### 7. **Tidak bisa booking untuk waktu yang sudah lewat**
+
+**Solusi:**
+Pastikan tanggal dan waktu booking di masa depan. Sistem otomatis mencegah booking untuk:
+
+-   Tanggal kemarin atau hari ini dengan waktu yang sudah lewat
+-   Waktu yang sudah dimulai untuk booking yang sudah approved
+
+#### 8. **Tidak bisa edit/cancel booking yang sedang berlangsung**
+
+**Solusi:**
+Booking yang sudah approved dan waktunya sudah dimulai tidak bisa diubah atau dibatalkan. Ini adalah business rule untuk menjaga integritas jadwal.
 
 ---
 
@@ -1234,7 +1269,7 @@ Give a ⭐️ if this project helped you!
 -   ✅ **Interactive features** dengan Alpine.js (modals, dropdowns)
 -   ✅ **Charts** dengan Chart.js (bar charts side-by-side)
 -   ✅ **Beautiful alerts** dengan SweetAlert2
--   ✅ **Comprehensive testing** (21 test cases dengan Pest PHP)
+-   ✅ **Comprehensive testing** (25 test cases dengan Pest PHP)
 -   ✅ **Clean architecture**
     -   Repository-Service pattern
     -   ImageHandler trait untuk reusable code
@@ -1248,6 +1283,7 @@ Give a ⭐️ if this project helped you!
 -   **Image management**: Trait-based untuk reusability
 -   **Conflict algorithm**: Efficient query dengan date + time check
 -   **Code quality**: Laravel Pint, PSR-12 standard
+-   **Comprehensive testing**: 25 test cases (16 booking + 9 room) dengan Pest PHP
 
 ---
 
