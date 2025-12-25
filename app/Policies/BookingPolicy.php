@@ -41,10 +41,9 @@ class BookingPolicy
     public function delete(User $user, Booking $booking): bool
     {
         if ($user->hasRole('Admin')) {
-            return true; // Admin bisa hapus semua booking
+            return true;
         }
 
-        // Staff hanya bisa hapus booking pending miliknya sendiri
         return $booking->isOwnedBy($user) && $booking->status === Booking::STATUS_PENDING;
     }
 
@@ -61,7 +60,6 @@ class BookingPolicy
     public function cancel(User $user, Booking $booking): bool
     {
         if ($user->hasRole('Admin')) {
-            // Admin hanya bisa cancel booking yang belum disetujui
             return in_array($booking->status, [
                 Booking::STATUS_PENDING,
                 Booking::STATUS_REJECTED,
