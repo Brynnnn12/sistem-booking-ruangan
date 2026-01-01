@@ -1,43 +1,484 @@
 # 🏢 Meeting Room Booking System
 
-> Sistem manajemen pemesanan ruang meeting berbasis web dengan fitur real-time conflict detection, role-based access control, dan approval workflow.
+[![Laravel](https://img.shields.io/badge/Laravel-12-FF2D20?style=for-the-badge&logo=laravel)](https://laravel.com)
+[![PHP](https://img.shields.io/badge/PHP-8.2+-777BB4?style=for-the-badge&logo=php)](https://php.net)
+[![MySQL](https://img.shields.io/badge/MySQL-8.0+-4479A1?style=for-the-badge&logo=mysql)](https://mysql.com)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.1+-06B6D4?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com)
+[![License](https://img.shields.io/badge/License-MIT-green.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
 
-[![Laravel](https://img.shields.io/badge/Laravel-12-FF2D20?style=flat&logo=laravel)](https://laravel.com)
-[![PHP](https://img.shields.io/badge/PHP-8.2+-777BB4?style=flat&logo=php)](https://php.net)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.0+-06B6D4?style=flat&logo=tailwind-css)](https://tailwindcss.com)
+> A comprehensive web-based meeting room booking system with employee management, featuring real-time conflict detection, role-based access control, and approval workflow.
 
----
+## 📋 Table of Contents
 
-## 📋 Deskripsi Proyek
+-   [🏢 Meeting Room Booking System](#-meeting-room-booking-system)
+    -   [📋 Table of Contents](#-table-of-contents)
+    -   [✨ About](#-about)
+        -   [🎯 Problem Statement](#-problem-statement)
+        -   [💡 Solution](#-solution)
+        -   [👥 Target Users](#-target-users)
+    -   [🚀 Key Features](#-key-features)
+    -   [🛠️ Tech Stack](#️-tech-stack)
+    -   [📋 Prerequisites](#-prerequisites)
+    -   [⚡ Quick Start](#-quick-start)
+    -   [📖 Usage](#-usage)
+    -   [🧪 Testing](#-testing)
+    -   [📚 API Documentation](#-api-documentation)
+    -   [🤝 Contributing](#-contributing)
+    -   [📄 License](#-license)
+    -   [📞 Support](#-support)
+    -   [📝 Changelog](#-changelog)
 
-Sistem booking ruang meeting internal untuk kantor/organisasi yang menangani pemesanan ruang rapat dengan **real-time conflict checking**, **approval workflow**, dan **manajemen berbasis role**. Sistem ini dirancang sebagai solusi digital yang realistis dan dapat diterapkan di startup, kantor, atau organisasi modern.
+## ✨ About
+
+The Meeting Room Booking System is a comprehensive web application designed to streamline meeting room reservations in organizations. Built with modern web technologies, it provides a robust solution for managing room bookings with real-time conflict detection, approval workflows, and role-based access control.
 
 ### 🎯 Problem Statement
 
--   **Konflik jadwal** - Beberapa tim memesan ruang yang sama pada waktu bersamaan
--   **Tidak ada tracking** - Kesulitan melacak siapa menggunakan ruang kapan
--   **Manual coordination** - Koordinasi via chat/email yang tidak efisien dan rentan error
--   **Tidak ada audit trail** - Tidak ada catatan lengkap untuk compliance dan reporting
+-   **Schedule Conflicts**: Multiple teams booking the same room simultaneously
+-   **No Tracking**: Difficulty tracking room usage and availability
+-   **Manual Coordination**: Inefficient coordination via chat/email prone to errors
+-   **No Audit Trail**: Lack of comprehensive records for compliance and reporting
 
-### 💡 Solusi
+### 💡 Solution
 
-Aplikasi web yang menyediakan:
+A digital booking platform that provides:
 
--   ✅ **Real-time availability checking** - Cek ketersediaan ruang secara langsung
--   ✅ **Conflict detection** - Sistem otomatis mencegah double booking
--   ✅ **Approval workflow** - Admin dapat menyetujui/menolak booking
--   ✅ **Role-based access** - Pembatasan akses berdasarkan role (Admin/Staff)
--   ✅ **Complete audit trail** - History lengkap untuk setiap booking
--   ✅ **Responsive design** - Dapat diakses dari desktop dan mobile
+-   ✅ **Real-time availability checking** - Instant room availability verification
+-   ✅ **Conflict detection** - Automated prevention of double bookings
+-   ✅ **Approval workflow** - Administrative approval/rejection system
+-   ✅ **Role-based access** - Granular permission control (Admin/Staff)
+-   ✅ **Employee management** - Complete user administration system
+-   ✅ **Complete audit trail** - Full booking history and compliance records
+-   ✅ **Responsive design** - Mobile and desktop accessibility
 
 ### 👥 Target Users
 
-1. **Admin** - Mengelola master data ruang, menyetujui booking, dan monitoring
-2. **Staff** - Membuat booking untuk kebutuhan meeting tim
+1. **Administrators** - Manage rooms, approve bookings, and oversee operations
+2. **Staff Members** - Create and manage their meeting room reservations
+
+## 🚀 Key Features
+
+### 🔐 Authentication & Authorization
+
+-   Laravel Breeze authentication with email verification
+-   Role-based access control using Spatie Laravel Permission
+-   Admin-only user registration (public registration disabled)
+
+### 🏢 Room Management
+
+-   Complete CRUD operations for rooms (Admin only)
+-   Image upload with validation and automatic cleanup
+-   Room status management (active/inactive)
+-   Advanced filtering and search capabilities
+
+### 👥 Employee Management
+
+-   **CRUD Operations** (Admin only)
+    -   Create, Read, Update, Delete employees
+    -   Role assignment (Admin/Staff) during creation
+    -   Email verification and password hashing
+    -   Profile management with role-based access
+-   **Employee Listing** (Admin only)
+    -   Paginated list with search functionality
+    -   Filter by role and status
+    -   View employee details and roles
+-   **Role Management**
+    -   Assign roles during employee creation/update
+    -   Role-based permissions using Spatie Laravel Permission
+    -   Admin can manage all employees, Staff limited access
+
+### 📅 Booking Management
+
+-   **Staff Features**:
+
+    -   Create bookings with real-time conflict checking
+    -   View and manage personal bookings
+    -   Edit/cancel pending bookings
+    -   Room selection with availability preview
+
+-   **Admin Features**:
+    -   Approve/reject booking requests
+    -   View all bookings with advanced filtering
+    -   Force cancel bookings (business rule compliant)
+    -   Comprehensive booking oversight
+
+### 🔍 Conflict Detection
+
+-   Real-time overlap validation
+-   Intelligent algorithm considering approved bookings only
+-   User-friendly error messages with conflict details
+
+### 📊 Dashboard & Analytics
+
+-   Role-specific dashboards
+-   Interactive charts showing booking trends
+-   Real-time statistics and metrics
+-   Responsive data visualization
+
+### 🎨 Modern UI/UX
+
+-   Responsive design with Tailwind CSS
+-   Interactive components with Alpine.js
+-   Beautiful notifications with SweetAlert2
+-   Mobile-first approach
+
+## 🛠️ Tech Stack
+
+### Backend
+
+| Technology            | Version | Purpose              |
+| --------------------- | ------- | -------------------- |
+| **Laravel**           | 12.x    | PHP Framework        |
+| **PHP**               | 8.2+    | Programming Language |
+| **MySQL**             | 8.0+    | Database             |
+| **Laravel Breeze**    | 2.3+    | Authentication       |
+| **Spatie Permission** | 6.24+   | Role Management      |
+
+### Frontend
+
+| Technology       | Version | Purpose              |
+| ---------------- | ------- | -------------------- |
+| **Tailwind CSS** | 3.1+    | Utility-first CSS    |
+| **Alpine.js**    | 3.4+    | JavaScript Framework |
+| **Chart.js**     | 4.5+    | Data Visualization   |
+| **SweetAlert2**  | 11.26+  | Modal Dialogs        |
+| **Vite**         | 7.0+    | Build Tool           |
+
+### Testing & Quality
+
+| Technology   | Version | Purpose           |
+| ------------ | ------- | ----------------- |
+| **Pest PHP** | 4.2+    | Testing Framework |
+| **PHPUnit**  | 11.x    | Unit Testing      |
+
+### Development Tools
+
+-   **Composer** - PHP Dependency Manager
+-   **NPM** - JavaScript Package Manager
+-   **Laravel Pint** - Code Style Fixer
+-   **Laravel Sail** - Docker Environment
+
+## 📋 Prerequisites
+
+Before you begin, ensure you have the following installed:
+
+-   **PHP** >= 8.2
+-   **Composer** (PHP dependency manager)
+-   **Node.js** & **NPM** (JavaScript runtime and package manager)
+-   **MySQL** >= 8.0 or **MariaDB**
+-   **Git** (version control)
+
+## ⚡ Quick Start
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/Brynnnn12/sistem-booking-ruangan.git
+cd sistem-booking-ruangan
+```
+
+### 2. Install Dependencies
+
+```bash
+# Install PHP dependencies
+composer install
+
+# Install JavaScript dependencies
+npm install
+```
+
+### 3. Environment Setup
+
+```bash
+# Copy environment file
+cp .env.example .env
+
+# Generate application key
+php artisan key:generate
+```
+
+### 4. Database Configuration
+
+Update your `.env` file with database credentials:
+
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=booking_ruangan
+DB_USERNAME=your_username
+DB_PASSWORD=your_password
+```
+
+### 5. Database Setup
+
+```bash
+# Run migrations
+php artisan migrate
+
+# Seed roles and sample data
+php artisan db:seed
+```
+
+### 6. Build Assets
+
+```bash
+# Development build
+npm run dev
+
+# Production build
+npm run build
+```
+
+### 7. Start the Application
+
+```bash
+# Using PHP built-in server
+php artisan serve
+
+# Using Laravel Herd (recommended)
+# Access: http://sistem-booking-ruangan.test
+```
+
+### Default Users
+
+-   **Admin**: `admin@example.com` / `password`
+-   **Staff**: `staff@example.com` / `password`
+
+> **Note**: Public registration is disabled. New accounts must be created by administrators.
+
+## 📖 Usage
+
+### For Administrators
+
+#### Managing Rooms
+
+1. Log in as Admin
+2. Navigate to **Rooms** in the sidebar
+3. Click **Create Room** to add new rooms
+4. Fill in: Name, Location, Capacity, and upload an image
+5. Click **Save** - room appears in the list
+
+#### Managing Employees
+
+1. Log in as Admin
+2. Navigate to **Employees** in the sidebar
+3. Click **Create Employee** to add new employees
+4. Fill in: Name, Email, Password, and select Role (Admin/Staff)
+5. Click **Save** - employee appears in the list with assigned role
+6. View employee details, edit profile, or delete employees as needed
+
+#### Approving Bookings
+
+1. Navigate to **Bookings** in the sidebar
+2. Review pending bookings
+3. Click **Approve** (green) or **Reject** (red)
+4. Confirm in the dialog - status updates automatically
+
+#### Monitoring & Reports
+
+-   View dashboard statistics
+-   Monitor booking trends with interactive charts
+-   Filter bookings by room, user, status, and date range
+
+### For Staff Members
+
+#### Creating Bookings
+
+1. Log in as Staff
+2. Click **Create Booking** in the sidebar
+3. Select booking date (minimum today)
+4. Choose start time (07:00-22:00) and end time (08:00-23:00)
+5. View available rooms with images
+6. Click **Book Now** on desired room
+7. Fill in notes (optional) and submit
+
+#### Managing Bookings
+
+-   View personal bookings in **My Bookings**
+-   Edit pending bookings (room cannot be changed)
+-   Cancel pending bookings
+-   Track approval status
+
+## 🧪 Testing
+
+### Running Tests
+
+```bash
+# Run all tests
+php artisan test
+
+# Run specific test suite
+php artisan test --filter=BookingTest
+
+# Run with coverage (requires Xdebug)
+php artisan test --coverage
+
+# Run tests in verbose mode
+php artisan test --verbose
+```
+
+### Test Coverage
+
+-   **Booking Tests**: 16 test cases ✅
+-   **Room Tests**: 9 test cases ✅
+-   **Employee Tests**: 5 test cases ✅ (Planned)
+-   **Total**: 30 test cases
+
+### Test Configuration
+
+Tests use SQLite in-memory database. Ensure your `.env.testing` is configured:
+
+```env
+DB_CONNECTION=sqlite
+DB_DATABASE=:memory:
+```
+
+## 📚 API Documentation
+
+### Web Routes (Authentication Required)
+
+All dashboard routes require authentication and email verification.
+
+#### Core Endpoints
+
+| Method | Endpoint                           | Description     | Access                     |
+| ------ | ---------------------------------- | --------------- | -------------------------- |
+| GET    | `/dashboard`                       | Main dashboard  | Admin, Staff               |
+| GET    | `/dashboard/rooms`                 | List rooms      | Admin (CRUD), Staff (View) |
+| GET    | `/dashboard/bookings`              | List bookings   | Admin (All), Staff (Own)   |
+| POST   | `/dashboard/bookings`              | Create booking  | Admin, Staff               |
+| PATCH  | `/dashboard/bookings/{id}/approve` | Approve booking | Admin                      |
+| PATCH  | `/dashboard/bookings/{id}/reject`  | Reject booking  | Admin                      |
+| PATCH  | `/dashboard/bookings/{id}/cancel`  | Cancel booking  | Owner/Admin                |
+
+#### AJAX Endpoints
+
+| Method | Endpoint                                               | Description                        |
+| ------ | ------------------------------------------------------ | ---------------------------------- |
+| GET    | `/dashboard/api/available-rooms?start_time=&end_time=` | Get available rooms for time range |
+
+## 🤝 Contributing
+
+We welcome contributions! Please follow these steps:
+
+### 1. Fork the Repository
+
+```bash
+git clone https://github.com/your-username/sistem-booking-ruangan.git
+```
+
+### 2. Create a Feature Branch
+
+```bash
+git checkout -b feature/your-feature-name
+```
+
+### 3. Make Your Changes
+
+-   Follow PSR-12 coding standards
+-   Add tests for new features
+-   Update documentation as needed
+
+### 4. Run Tests
+
+```bash
+php artisan test
+```
+
+### 5. Commit Your Changes
+
+```bash
+git commit -m "feat: add your feature description"
+```
+
+### 6. Push and Create Pull Request
+
+```bash
+git push origin feature/your-feature-name
+```
+
+### Development Guidelines
+
+-   **Code Style**: Use Laravel Pint for code formatting
+-   **Commits**: Follow conventional commit format
+-   **Tests**: Maintain test coverage above 80%
+-   **Documentation**: Update README for significant changes
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 📞 Support
+
+### Getting Help
+
+-   **Issues**: [GitHub Issues](https://github.com/Brynnnn12/sistem-booking-ruangan/issues)
+-   **Discussions**: [GitHub Discussions](https://github.com/Brynnnn12/sistem-booking-ruangan/discussions)
+-   **Email**: your.email@example.com
+
+### Troubleshooting
+
+#### Common Issues
+
+**Permission Issues**
+
+```bash
+chmod -R 775 storage bootstrap/cache
+```
+
+**Asset Compilation Issues**
+
+```bash
+npm install && npm run build
+```
+
+**Database Connection Issues**
+
+-   Verify `.env` database credentials
+-   Ensure MySQL service is running
+-   Run `php artisan migrate` to set up database
+
+## 📝 Changelog
+
+### [1.0.0] - 2025-12-25
+
+#### Added
+
+-   ✅ Complete meeting room booking system
+-   ✅ Real-time conflict detection
+-   ✅ Role-based access control (Admin/Staff)
+-   ✅ Approval workflow system
+-   ✅ Responsive UI with Tailwind CSS
+-   ✅ Interactive dashboard with Chart.js
+-   ✅ Comprehensive test suite (25 tests)
+-   ✅ Image upload and management
+-   ✅ Email verification system
+-   ✅ Audit trail functionality
+-   ✅ **Employee Management System**
+    -   CRUD operations for employees (Admin only)
+    -   Role assignment during creation/update
+    -   Employee listing with search and pagination
+    -   Profile management with role-based permissions
+
+#### Technical Features
+
+-   Laravel 12 framework
+-   Repository-Service pattern
+-   Policy-based authorization
+-   Database optimization with indexes
+-   Modern frontend with Alpine.js
+-   Automated testing with Pest PHP
 
 ---
 
-## ✨ Fitur Utama
+<div align="center">
+
+**Built with ❤️ using Laravel 12**
+
+[⬆ Back to top](#-meeting-room-booking-system)
+
+</div>
 
 ### 🔐 Authentication & Authorization
 
@@ -593,13 +1034,17 @@ php artisan test --verbose
 | PATCH  | `/dashboard/bookings/{booking}`      | dashboard.bookings.update  | Owner (if pending), Admin |
 | DELETE | `/dashboard/bookings/{booking}`      | dashboard.bookings.destroy | Owner (if pending), Admin |
 
-#### Booking Actions
+#### Employee Management
 
-| Method | URI                                     | Name                       | Access                    |
-| ------ | --------------------------------------- | -------------------------- | ------------------------- |
-| PATCH  | `/dashboard/bookings/{booking}/approve` | dashboard.bookings.approve | Admin                     |
-| PATCH  | `/dashboard/bookings/{booking}/reject`  | dashboard.bookings.reject  | Admin                     |
-| PATCH  | `/dashboard/bookings/{booking}/cancel`  | dashboard.bookings.cancel  | Owner (if pending), Admin |
+| Method | URI                                    | Name                        | Access |
+| ------ | -------------------------------------- | --------------------------- | ------ |
+| GET    | `/dashboard/employees`                 | dashboard.employees.index   | Admin  |
+| GET    | `/dashboard/employees/create`          | dashboard.employees.create  | Admin  |
+| POST   | `/dashboard/employees`                 | dashboard.employees.store   | Admin  |
+| GET    | `/dashboard/employees/{employee}`      | dashboard.employees.show    | Admin  |
+| GET    | `/dashboard/employees/{employee}/edit` | dashboard.employees.edit    | Admin  |
+| PATCH  | `/dashboard/employees/{employee}`      | dashboard.employees.update  | Admin  |
+| DELETE | `/dashboard/employees/{employee}`      | dashboard.employees.destroy | Admin  |
 
 #### AJAX Endpoints (for real-time features)
 

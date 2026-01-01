@@ -19,6 +19,13 @@
             @role('Admin')
                 <div>
                     <p class="mb-2 px-2 text-xs font-semibold uppercase tracking-wider text-blue-200/90">Manajemen</p>
+                    <a href="{{ route('dashboard.employees.index') }}"
+                        class="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition hover:bg-blue-700 {{ request()->routeIs('dashboard.employees.*') ? 'bg-blue-700 text-white' : 'text-blue-100' }}">
+                        <i class="fas fa-users text-blue-200"></i>
+                        <span>Pegawai</span>
+                    </a>
+
+
                     <a href="{{ route('dashboard.rooms.index') }}"
                         class="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition hover:bg-blue-700 {{ request()->routeIs('dashboard.rooms.*') ? 'bg-blue-700 text-white' : 'text-blue-100' }}">
                         <i class="fas fa-building text-blue-200"></i>
@@ -36,11 +43,19 @@
             @role('Staff')
                 <div>
                     <p class="mb-2 px-2 text-xs font-semibold uppercase tracking-wider text-blue-200/90">Booking</p>
+                    <a href="{{ route('dashboard.bookings.create') }}"
+                        class="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition hover:bg-blue-700 {{ request()->routeIs('dashboard.bookings.create') ? 'bg-blue-700 text-white' : 'text-blue-100' }}">
+                        <i class="fas fa-plus text-blue-200"></i>
+                        <span>Buat Booking</span>
+                    </a>
+
+
                     <a href="{{ route('dashboard.bookings.index') }}"
-                        class="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition hover:bg-blue-700 {{ request()->routeIs('dashboard.bookings.*') ? 'bg-blue-700 text-white' : 'text-blue-100' }}">
+                        class="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition hover:bg-blue-700 {{ request()->routeIs('dashboard.bookings.index') ? 'bg-blue-700 text-white' : 'text-blue-100' }}">
                         <i class="fas fa-calendar text-blue-200"></i>
                         <span>Booking Saya</span>
                     </a>
+
                 </div>
             @endrole
 
@@ -69,11 +84,10 @@
 
             <form action="{{ route('logout') }}" method="POST">
                 @csrf
-                <button type="submit"
-                    class="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-semibold text-blue-100 transition hover:bg-blue-700 hover:text-white">
-                    <i class="fas fa-sign-out-alt text-blue-200"></i>
-                    <span>Keluar</span>
-                </button>
+                <x-partials.danger-button type="submit" class="w-full justify-center">
+                    <i class="fas fa-sign-out-alt mr-2 text-xs"></i>
+                    Logout
+                </x-partials.danger-button>
             </form>
         </div>
     </div>

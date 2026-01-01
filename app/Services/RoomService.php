@@ -5,7 +5,6 @@ namespace App\Services;
 use App\Models\Room;
 use App\Repositories\RoomRepository;
 use App\Traits\ImageHandler;
-use DomainException;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 

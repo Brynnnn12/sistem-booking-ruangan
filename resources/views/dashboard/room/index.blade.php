@@ -15,30 +15,28 @@
             <form method="GET" action="{{ route('dashboard.rooms.index') }}"
                 class="grid grid-cols-1 gap-4 sm:grid-cols-6">
                 <div class="sm:col-span-4">
-                    <label for="search" class="block text-sm font-medium text-gray-700">Search</label>
-                    <input type="text" name="search" id="search" value="{{ request('search') }}"
-                        class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-gray-400 focus:ring-gray-300"
-                        placeholder="Search by name or location...">
+                    <x-partials.input-label for="search" :value="__('Search')" />
+
+                    <x-partials.text-input id="search" class="block mt-1 w-full" type="text" name="search"
+                        value="{{ request('search') }}" placeholder="Cari berdasarkan nama dan lokasi..." />
                 </div>
 
                 <div class="sm:col-span-2">
                     <label for="is_active" class="block text-sm font-medium text-gray-700">Status</label>
                     <select name="is_active" id="is_active"
                         class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-gray-400 focus:ring-gray-300">
-                        <option value="">All</option>
-                        <option value="1" {{ request('is_active') === '1' ? 'selected' : '' }}>Active</option>
-                        <option value="0" {{ request('is_active') === '0' ? 'selected' : '' }}>Inactive</option>
+                        <option value="">Semua</option>
+                        <option value="1" {{ request('is_active') === '1' ? 'selected' : '' }}>Aktif</option>
+                        <option value="0" {{ request('is_active') === '0' ? 'selected' : '' }}>Tidak Aktif</option>
                     </select>
                 </div>
 
                 <div class="sm:col-span-6 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-end">
-                    <button type="submit"
-                        class="inline-flex w-full items-center justify-center rounded-lg bg-gray-900 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-300 sm:w-fit">
-                        <i class="fas fa-search mr-2 text-xs"></i>Search
-                    </button>
+                    <x-partials.primary-button type="submit">Cari</x-partials.primary-button>
+
                     <a href="{{ route('dashboard.rooms.index') }}"
                         class="inline-flex w-full items-center justify-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-semibold text-gray-700 shadow-sm transition hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-300 sm:w-fit">
-                        <i class="fas fa-times mr-2 text-xs"></i>Clear
+                        <i class="fas fa-times mr-2 text-xs"></i>Reset
                     </a>
                 </div>
             </form>

@@ -24,6 +24,8 @@ Route::middleware(['auth', 'verified'])
         Route::patch('bookings/{booking}/approve', [BookingController::class, 'approve'])->name('bookings.approve');
         Route::patch('bookings/{booking}/reject', [BookingController::class, 'reject'])->name('bookings.reject');
         Route::patch('bookings/{booking}/cancel', [BookingController::class, 'cancel'])->name('bookings.cancel');
+
+        Route::resource('employees', \App\Http\Controllers\EmployeeController::class);
     });
 
 require __DIR__ . '/auth.php';

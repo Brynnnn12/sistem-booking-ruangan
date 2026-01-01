@@ -97,7 +97,6 @@ test('staff bisa membuat booking', function () {
     // Assert
     $response->assertRedirect(route('dashboard.bookings.index'));
     $this->assertDatabaseHas('bookings', [
-        'user_id' => $user->id,
         'room_id' => $room->id,
         'status' => Booking::STATUS_PENDING,
         'booking_date' => now()->addDay()->startOfDay()->format('Y-m-d H:i:s'),

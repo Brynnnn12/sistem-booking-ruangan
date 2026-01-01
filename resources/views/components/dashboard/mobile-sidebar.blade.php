@@ -35,6 +35,13 @@
                             <span>Ruangan</span>
                         </a>
 
+                        <a href="{{ route('dashboard.employees.index') }}"
+                            class="mt-1 flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition hover:bg-blue-700 {{ request()->routeIs('dashboard.employees.*') ? 'bg-blue-700 text-white' : 'text-blue-100' }}"
+                            @click="isSidebarOpen = false">
+                            <i class="fas fa-users text-blue-200"></i>
+                            <span>Pegawai</span>
+                        </a>
+
                         <a href="{{ route('dashboard.bookings.index') }}"
                             class="mt-1 flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition hover:bg-blue-700 {{ request()->routeIs('dashboard.bookings.*') ? 'bg-blue-700 text-white' : 'text-blue-100' }}"
                             @click="isSidebarOpen = false">
