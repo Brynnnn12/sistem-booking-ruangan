@@ -4,8 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo; // Import ini biar Type Hinting jalan
-use Illuminate\Database\Eloquent\Builder; // Import Builder
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Builder;
+use Carbon\Carbon;
 
 class Booking extends Model
 {
@@ -29,10 +30,9 @@ class Booking extends Model
 
     protected $casts = [
         'booking_date' => 'date',
-
     ];
 
-    /* ================= Relations (Pakai Type Hinting : BelongsTo) ================= */
+    /* ================= Relations ================= */
 
     public function room(): BelongsTo
     {
@@ -56,10 +56,9 @@ class Booking extends Model
         return $query->when($status, fn($q) => $q->where('status', $status));
     }
 
-    // <<< TAMBAHAN PENTING 1: Scope Pending (Biar Command baca lebih enak)
-    public function scopePending(Builder $query)
+    public function scopeForRoom(Builder $query, $roomId)
     {
-        return $query->where('status', self::STATUS_PENDING);
+        return $query->when($roomId, fn($q) => $q->where('room_id', $roomId));
     }
 
     public function scopeForUser(Builder $query, $userId)
@@ -67,26 +66,31 @@ class Booking extends Model
         return $query->when($userId, fn($q) => $q->where('user_id', $userId));
     }
 
-    // <<< TAMBAHAN PENTING 2: Logic Cron Job dipindah kesini
-    // Mencari booking yang "Sudah lewat waktu mulainya"
+    // Dipakai oleh Cron Job
+    public function scopePending(Builder $query)
+    {
+        return $query->where('status', self::STATUS_PENDING);
+    }
+
+    // Dipakai oleh Cron Job
     public function scopePastStartTime(Builder $query)
     {
         $now = now();
         return $query->where(function ($q) use ($now) {
-            $q->where('booking_date', '<', $now->toDateString()) // Tanggal lampau
+            $q->where('booking_date', '<', $now->toDateString())
                 ->orWhere(function ($sub) use ($now) {
-                    $sub->where('booking_date', '=', $now->toDateString()) // Hari ini
-                        ->whereTime('start_time', '<=', $now->toTimeString()); // Jam sudah lewat
+                    $sub->where('booking_date', '=', $now->toDateString())
+                        ->whereTime('start_time', '<=', $now->toTimeString());
                 });
         });
     }
 
+    // Dipakai untuk cek bentrok
     public function scopeActive(Builder $query)
     {
         return $query
             ->where('status', self::STATUS_APPROVED)
             ->where(function ($q) {
-                // Logic: Booking masih berlaku (Belum selesai)
                 $q->where('booking_date', '>', now()->toDateString())
                     ->orWhere(function ($sub) {
                         $sub->where('booking_date', '=', now()->toDateString())
@@ -95,7 +99,7 @@ class Booking extends Model
             });
     }
 
-    /* ================= Helper Methods ================= */
+    /* ================= Helper Methods (YANG HILANG TADI ADA DISINI) ================= */
 
     public function isPending(): bool
     {
@@ -115,5 +119,14 @@ class Booking extends Model
     public function canBeModifiedBy(User $user): bool
     {
         return $this->isOwnedBy($user) && $this->isPending();
+    }
+
+    // INI DIA METHOD YANG MENYEBABKAN ERROR
+    public function isActiveApproved(): bool
+    {
+        // Logic: Status Approved DAN Waktunya belum lewat
+        return $this->status === self::STATUS_APPROVED &&
+            ($this->booking_date->isFuture() ||
+                ($this->booking_date->isToday() && now()->format('H:i:s') < $this->end_time));
     }
 }
