@@ -59,6 +59,7 @@ class EmployeeService
 
     public function delete(User $user): bool
     {
+
         return $this->employeeRepository->delete($user);
     }
 }

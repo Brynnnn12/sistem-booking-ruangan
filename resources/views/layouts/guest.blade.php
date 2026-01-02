@@ -23,6 +23,8 @@
         <div class="w-full max-w-xl">
             <div class="bg-white/95 backdrop-blur-sm border border-white/40 shadow-2xl rounded-2xl p-8 sm:p-10">
                 <div class="space-y-6">
+                    <x-ui.flash-messages />
+
                     {{ $slot }}
                 </div>
             </div>

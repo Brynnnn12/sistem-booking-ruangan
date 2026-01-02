@@ -56,7 +56,7 @@
                                 <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-600 sm:px-6">
                                     {{ $staff->email }}</td>
                                 <td class="px-4 py-3 whitespace-nowrap text-sm sm:px-6">
-                                    <div class="flex items-center gap-3">
+                                    <div class="flex items-center justify-center gap-3">
                                         <a href="{{ route('dashboard.employees.show', $staff) }}"
                                             class="text-gray-600 transition hover:text-gray-900" aria-label="View">
                                             <i class="fas fa-eye"></i>
