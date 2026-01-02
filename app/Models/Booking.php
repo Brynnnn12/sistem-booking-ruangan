@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo; // Import ini biar Type Hinting jalan
+use Illuminate\Database\Eloquent\Builder; // Import Builder
 
 class Booking extends Model
 {
@@ -27,51 +29,68 @@ class Booking extends Model
 
     protected $casts = [
         'booking_date' => 'date',
+
     ];
 
-    /* ================= Relations ================= */
+    /* ================= Relations (Pakai Type Hinting : BelongsTo) ================= */
 
-    public function room()
+    public function room(): BelongsTo
     {
         return $this->belongsTo(Room::class);
     }
 
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    public function approvedBy()
+    public function approvedBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'approved_by');
     }
 
     /* ================= Scopes ================= */
 
-    public function scopeStatus($query, $status)
+    public function scopeStatus(Builder $query, $status)
     {
         return $query->when($status, fn($q) => $q->where('status', $status));
     }
 
-    public function scopeForUser($query, $userId)
+    // <<< TAMBAHAN PENTING 1: Scope Pending (Biar Command baca lebih enak)
+    public function scopePending(Builder $query)
+    {
+        return $query->where('status', self::STATUS_PENDING);
+    }
+
+    public function scopeForUser(Builder $query, $userId)
     {
         return $query->when($userId, fn($q) => $q->where('user_id', $userId));
     }
 
-    public function scopeForRoom($query, $roomId)
+    // <<< TAMBAHAN PENTING 2: Logic Cron Job dipindah kesini
+    // Mencari booking yang "Sudah lewat waktu mulainya"
+    public function scopePastStartTime(Builder $query)
     {
-        return $query->when($roomId, fn($q) => $q->where('room_id', $roomId));
+        $now = now();
+        return $query->where(function ($q) use ($now) {
+            $q->where('booking_date', '<', $now->toDateString()) // Tanggal lampau
+                ->orWhere(function ($sub) use ($now) {
+                    $sub->where('booking_date', '=', $now->toDateString()) // Hari ini
+                        ->whereTime('start_time', '<=', $now->toTimeString()); // Jam sudah lewat
+                });
+        });
     }
 
-    public function scopeActive($query)
+    public function scopeActive(Builder $query)
     {
         return $query
             ->where('status', self::STATUS_APPROVED)
             ->where(function ($q) {
+                // Logic: Booking masih berlaku (Belum selesai)
                 $q->where('booking_date', '>', now()->toDateString())
                     ->orWhere(function ($sub) {
                         $sub->where('booking_date', '=', now()->toDateString())
-                            ->whereTime('end_time', '>', now()->format('H:i:s'));
+                            ->whereTime('end_time', '>', now()->toTimeString());
                     });
             });
     }
@@ -96,12 +115,5 @@ class Booking extends Model
     public function canBeModifiedBy(User $user): bool
     {
         return $this->isOwnedBy($user) && $this->isPending();
-    }
-
-    public function isActiveApproved(): bool
-    {
-        return $this->status === self::STATUS_APPROVED &&
-            ($this->booking_date->isFuture() ||
-                ($this->booking_date->isToday() && now()->format('H:i') < $this->end_time));
     }
 }
