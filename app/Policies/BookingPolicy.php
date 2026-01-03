@@ -60,15 +60,10 @@ class BookingPolicy
     public function cancel(User $user, Booking $booking): bool
     {
         if ($user->hasRole('Admin')) {
-            return in_array($booking->status, [
-                Booking::STATUS_PENDING,
-                Booking::STATUS_REJECTED,
-            ]);
+            return $booking->status === Booking::STATUS_PENDING;
         }
 
         return $booking->isOwnedBy($user)
-            && in_array($booking->status, [
-                Booking::STATUS_PENDING,
-            ]);
+            && $booking->status === Booking::STATUS_PENDING;
     }
 }

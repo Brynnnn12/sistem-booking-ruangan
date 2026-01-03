@@ -139,6 +139,13 @@ class BookingService
                 ]);
             }
 
+            //jika boking di rejected atau cancelled maka tidak bisa di cancel lagi
+            if ($booking->isRejected() || $booking->isCancelled()) {
+                throw \Illuminate\Validation\ValidationException::withMessages([
+                    'status' => 'Booking yang sudah ditolak atau dibatalkan tidak dapat dibatalkan lagi.',
+                ]);
+            }
+
             return $this->bookingRepository->cancel($booking);
         });
     }

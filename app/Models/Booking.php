@@ -121,7 +121,16 @@ class Booking extends Model
         return $this->isOwnedBy($user) && $this->isPending();
     }
 
-    // INI DIA METHOD YANG MENYEBABKAN ERROR
+    public function isRejected(): bool
+    {
+        return $this->status === self::STATUS_REJECTED;
+    }
+
+    public function isCancelled(): bool
+    {
+        return $this->status === self::STATUS_CANCELLED;
+    }
+
     public function isActiveApproved(): bool
     {
         // Logic: Status Approved DAN Waktunya belum lewat
